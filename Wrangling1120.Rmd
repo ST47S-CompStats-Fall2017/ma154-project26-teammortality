@@ -12,7 +12,6 @@ require(dplyr)
 load("~/Desktop/CompStats/Project/ma154-project26-teammortality/USA_county_data.RData")
 countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,Uninsured,Unemployment)
 countydata <- countydata %>% filter(!fips %in% seq(0,100000, by=1000)) %>% arrange(fips)
-View(countydata)
 ```
 
 ```{r}
@@ -20,7 +19,6 @@ library(readxl)
 ruralurbancodes2013 <- read_excel("ruralurbancodes2013.xls")
 ruralurbancodes2013 <- ruralurbancodes2013 %>% mutate(fips=FIPS) %>% mutate(fips=as.numeric(FIPS))
 newcountydata <- full_join(ruralurbancodes2013,countydata,by=c("fips" = "fips"))
-View(newcountydata)
 ```
 
 ```{r}
@@ -64,8 +62,33 @@ SELF: Self-harm and interpersonal violence
 WAR: Forces of nature, war, and legal intervention
 
 ```{r}
-mortalityrates <- mortalityrates %>% filter(fips>100) %>% arrange(fips)
+mortalityrates <- mortalityrates %>% filter(fips>100) %>% filter(fips<70000) %>% arrange(fips)
 
 require(dplyr)
-countyrates <- full_join(newcountydata,mortalityrates,by=c("fips"))
+countyrates <- inner_join(newcountydata,mortalityrates,by=c("fips"))
 ```
+
+```{r}
+countyratesnogaps <- countyrates %>% filter(fips>100) %>% filter(fips<70000) %>% filter(!is.na(rep16_frac)) %>% filter(!is.na(At.Least.High.School.Diploma))  %>% arrange(fips)
+```
+
+```{r}
+countyratesnogaps <- countyratesnogaps %>% select(location,fips,HIV.HIV80,HIV.HIV85,HIV.HIV90,HIV.HIV95,HIV.HIV00,HIV.HIV05,HIV.HIV10,HIV.HIV14,INF.INF80,INF.INF85,INF.INF90,INF.INF95,INF.INF00,INF.INF05,INF.INF10,INF.INF14,TROP.TROP80,TROP.TROP85,TROP.TROP90,TROP.TROP95,TROP.TROP00,TROP.TROP05,TROP.TROP10,TROP.TROP14,MAT.MAT80,MAT.MAT85,MAT.MAT90,MAT.MAT95,MAT.MAT00,MAT.MAT05,MAT.MAT10,MAT.MAT14,NEON.NEON80,NEON.NEON85,NEON.NEON90,NEON.NEON95,NEON.NEON00,NEON.NEON05,NEON.NEON10,NEON.NEON14,NUT.NUT80,NUT.NUT85,NUT.NUT90,NUT.NUT95,NUT.NUT00,NUT.NUT05,NUT.NUT10,NUT.NUT14,OTHC.OTHC80,OTHC.OTHC85,OTHC.OTHC90,OTHC.OTHC95,OTHC.OTHC00,OTHC.OTHC05,OTHC.OTHC10,OTHC.OTHC14,NEOP.NEOP80,NEOP.NEOP85,NEOP.NEOP90,NEOP.NEOP95,NEOP.NEOP00,NEOP.NEOP05,NEOP.NEOP10,NEOP.NEOP14,CHRON.CHRON80,CHRON.CHRON85,CHRON.CHRON90,CHRON.CHRON95,CHRON.CHRON00,CHRON.CHRON05,CHRON.CHRON10,CHRON.CHRON14,CIRR.CIRR80,CIRR.CIRR85,CIRR.CIRR90,CIRR.CIRR95,CIRR.CIRR00,CIRR.CIRR05,CIRR.CIRR10,CIRR.CIRR14,DIG.DIG80,DIG.DIG85,DIG.DIG90,DIG.DIG95,DIG.DIG00,DIG.DIG05,DIG.DIG10,DIG.DIG14,NEUR.NEUR80,NEUR.NEUR85,NEUR.NEUR90,NEUR.NEUR95,NEUR.NEUR00,NEUR.NEUR05,NEUR.NEUR10,NEUR.NEUR14,MENSUB.MENSUB80,MENSUB.MENSUB85,MENSUB.MENSUB90,MENSUB.MENSUB95,MENSUB.MENSUB00,MENSUB.MENSUB05,MENSUB.MENSUB10,MENSUB.MENSUB14,DIAB.DIAB80,DIAB.DIAB85,DIAB.DIAB90,DIAB.DIAB95,DIAB.DIAB00,DIAB.DIAB05,DIAB.DIAB10,DIAB.DIAB14,MUSC.MUSC80,MUSC.MUSC85,MUSC.MUSC90,MUSC.MUSC95,MUSC.MUSC00,MUSC.MUSC05,MUSC.MUSC10,MUSC.MUSC14,OTHN.OTHN80,OTHN.OTHN85,OTHN.OTHN90,OTHN.OTHN95,OTHN.OTHN00,OTHN.OTHN05,OTHN.OTHN10,OTHN.OTHN14,TRAN.TRAN80,TRAN.TRAN85,TRAN.TRAN90,TRAN.TRAN95,TRAN.TRAN00,TRAN.TRAN05,TRAN.TRAN10,TRAN.TRAN14,UNIN.UNIN80,UNIN.UNIN85,UNIN.UNIN90,UNIN.UNIN95,UNIN.UNIN00,UNIN.UNIN05,UNIN.UNIN10,UNIN.UNIN14,SELF.SELF80,SELF.SELF85,SELF.SELF90,SELF.SELF95,SELF.SELF00,SELF.SELF05,SELF.SELF10,SELF.SELF14,WAR.WAR80,WAR.WAR85,WAR.WAR90,WAR.WAR95,WAR.WAR00,WAR.WAR05,WAR.WAR10,WAR.WAR14,rep16_frac,dem16_frac,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Adults.65.and.Older.Living.in.Poverty,Total.Population,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,median_age,Children.in.single.parent.households,Adult.obesity,Diabetes,Uninsured,Unemployment)
+countyratesfullcases <- countyratesnogaps[complete.cases(countyratesnogaps),]
+```
+
+```{r}
+require(caret)
+require(rpart)
+require(rpart.plot)
+library(tree)
+```
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ c(rep16_frac,dem16_frac,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Adults.65.and.Older.Living.in.Poverty,Total.Population,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,median_age,Children.in.single.parent.households,Adult.obesity,Diabetes,Uninsured,Unemployment), data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14
+```
+
