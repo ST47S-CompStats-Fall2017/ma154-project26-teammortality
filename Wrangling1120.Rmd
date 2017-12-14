@@ -14,12 +14,12 @@ countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep1
 countydata <- countydata %>% filter(!fips %in% seq(0,100000, by=1000)) %>% arrange(fips)
 ```
 
-```{r}
+
 library(readxl)
 load("ruralurbancodes2013.xls")
 ruralurbancodes2013 <- ruralurbancodes2013 %>% mutate(fips=FIPS) %>% mutate(fips=as.numeric(FIPS))
 newcountydata <- full_join(ruralurbancodes2013,countydata,by=c("fips" = "fips"))
-```
+
 
 ```{r}
 library(readxl)
@@ -87,7 +87,7 @@ library(tree)
 ```{r trees}
 set.seed(1)
 fitControl <- trainControl(method="cv")
-tr.HIV14 <- train(HIV.HIV14 ~ c(rep16_frac,dem16_frac,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Adults.65.and.Older.Living.in.Poverty,Total.Population,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,median_age,Children.in.single.parent.households,Adult.obesity,Diabetes,Uninsured,Unemployment), data=countyratesfullcases, method="rpart2", 
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 tr.HIV14
 ```
