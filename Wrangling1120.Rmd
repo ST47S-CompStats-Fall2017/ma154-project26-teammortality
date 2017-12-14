@@ -9,22 +9,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 require(dplyr)
-source_data("ma154-project26-teammortality/USA_county_data.RData")
+load("USA_county_data.RData")
 countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,Uninsured,Unemployment)
 countydata <- countydata %>% filter(!fips %in% seq(0,100000, by=1000)) %>% arrange(fips)
 ```
 
 ```{r}
 library(readxl)
-install.packages("RCurl")
-require(RCurl)
-ruralurbancodes2013 <- read.csv(text=getURL("https://github.com/ST47S-CompStats-Fall2017/ma154-project26-teammortality/blob/master/ruralurbancodes2013.xls"))
+load("ruralurbancodes2013.xls")
 ruralurbancodes2013 <- ruralurbancodes2013 %>% mutate(fips=FIPS) %>% mutate(fips=as.numeric(FIPS))
 newcountydata <- full_join(ruralurbancodes2013,countydata,by=c("fips" = "fips"))
 ```
 
 ```{r}
-library(readxl)    
+library(readxl)
 read_excel_allsheets <- function(filename) {
     sheets <- readxl::excel_sheets(filename)
     x <-    lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
@@ -32,7 +30,7 @@ read_excel_allsheets <- function(filename) {
     x
 }
 mortalityrates <- read_excel_allsheets("MortalityRatesClean.xlsx")
-mortalityrates <- as.data.frame(mysheets)
+mortalityrates <- as.data.frame(mortalityrates)
 ```
 
 ```{r}
