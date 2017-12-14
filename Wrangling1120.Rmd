@@ -180,6 +180,13 @@ To give a sense for our model-building process, we have included the R code for 
 Regression tree and mean square error
 
 ```{r}
+fips <- countyratesfullcases$fips
+latitude <- countyratesfullcases$latitude
+longitude <- countyratesfullcases$longitude
+```
+
+```{r}
+require(dplyr)
 set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School 
@@ -194,10 +201,27 @@ Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured +
 Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.HIV14$finalModel)
-preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+
+mortrate <- countyratesfullcases$HIV.HIV14
+cause <- rep("HIV", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+HIVreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realHIV14 <- countyratesfullcases$HIV.HIV14
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
 HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
 HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+mortrate <- HIV14$HIVtreediff
+cause <- rep("HIV", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+HIVtree <- cbind(fips,cause,model,mortrate) 
+
 treeHIV14.mse <- mean((preds.tr.HIV14 - realHIV14)^2)
 treeHIV14.mse
 ```
@@ -221,17 +245,20 @@ Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured +
 Unemployment, 
                 data=countyratesfullcases, method="knn", trControl = fitControl, 
                  tuneGrid= data.frame(k=5))
+
 preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
 realknnHIV14 <- countyratesfullcases$HIV.HIV14
 knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
 knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+mortrate <- HIV14$HIVtreediff
+cause <- rep("HIV", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+HIVknn <- cbind(fips,cause,model,mortrate)
+
 knnHIV14.mse <- mean((preds.knn.tr.HIV14 - realknnHIV14)^2)
 knnHIV14.mse
-
-HIV <- cbind(HIV14,knnHIV14)
-HIVreal <- HIV$realHIV14
-HIVtreediff <- HIV$HIVtreediff
-HIVknndiff <- HIV$HIVknndiff
 ```
 
 
@@ -247,10 +274,26 @@ fitControl <- trainControl(method="cv")
 tr.INF14 <- train(INF.INF14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.INF14$finalModel)
-preds.tr.INF14 <- predict(tr.INF14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$INF.INF14
+cause <- rep("INF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+INFreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realINF14 <- countyratesfullcases$INF.INF14
+preds.tr.INF14 <- predict(tr.INF14$finalModel, newdata = countyratesfullcases)
 INF14 <- cbind.data.frame(preds.tr.INF14,realINF14)
 INF14 <- INF14 %>% mutate(INFtreediff = ((preds.tr.INF14 - realINF14)/realINF14))
+mortrate <- INF14$INFtreediff
+cause <- rep("INF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+INFtree <- cbind(fips,cause,model,mortrate) 
+
 treeINF14.mse <- mean((preds.tr.INF14 - realINF14)^2)
 treeINF14.mse
 ```
@@ -269,13 +312,15 @@ preds.knn.tr.INF14 <- predict(knn.tr.INF14, newdata = countyratesfullcases)
 realknnINF14 <- countyratesfullcases$INF.INF14
 knnINF14 <- cbind.data.frame(preds.knn.tr.INF14,realknnINF14)
 knnINF14 <- knnINF14 %>% mutate(INFknndiff = ((preds.knn.tr.INF14 - realknnINF14)/realknnINF14))
+mortrate <- INF14$INFtreediff
+cause <- rep("INF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+INFknn <- cbind(fips,cause,model,mortrate)
+
 knnINF14.mse <- mean((preds.knn.tr.INF14 - realknnINF14)^2)
 knnINF14.mse
-
-INF <- cbind(INF14,knnINF14)
-INFreal <- INF$realINF14
-INFtreediff <- INF$INFtreediff
-INFknndiff <- INF$INFknndiff
 ```
 
 
@@ -291,11 +336,26 @@ set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.TROP14 <- train(TROP.TROP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
-rpart.plot(tr.TROP14$finalModel)
-preds.tr.TROP14 <- predict(tr.TROP14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$TROP.TROP14
+cause <- rep("TROP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+TROPreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realTROP14 <- countyratesfullcases$TROP.TROP14
+preds.tr.TROP14 <- predict(tr.TROP14$finalModel, newdata = countyratesfullcases)
 TROP14 <- cbind.data.frame(preds.tr.TROP14,realTROP14)
 TROP14 <- TROP14 %>% mutate(TROPtreediff = ((preds.tr.TROP14 - realTROP14)/realTROP14))
+mortrate <- TROP14$TROPtreediff
+cause <- rep("TROP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+TROPtree <- cbind(fips,cause,model,mortrate) 
+
 treeTROP14.mse <- mean((preds.tr.TROP14 - realTROP14)^2)
 treeTROP14.mse
 ```
@@ -314,13 +374,15 @@ preds.knn.tr.TROP14 <- predict(knn.tr.TROP14, newdata = countyratesfullcases)
 realknnTROP14 <- countyratesfullcases$TROP.TROP14
 knnTROP14 <- cbind.data.frame(preds.knn.tr.TROP14,realknnTROP14)
 knnTROP14 <- knnTROP14 %>% mutate(TROPknndiff = ((preds.knn.tr.TROP14 - realknnTROP14)/realknnTROP14))
+mortrate <- TROP14$TROPtreediff
+cause <- rep("TROP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+TROPknn <- cbind(fips,cause,model,mortrate)
+
 knnTROP14.mse <- mean((preds.knn.tr.TROP14 - realknnTROP14)^2)
 knnTROP14.mse
-
-TROP <- cbind(TROP14,knnTROP14)
-TROPreal <- TROP$realTROP14
-TROPtreediff <- TROP$TROPtreediff
-TROPknndiff <- TROP$TROPknndiff
 ```
 
 
@@ -337,10 +399,26 @@ fitControl <- trainControl(method="cv")
 tr.MAT14 <- train(MAT.MAT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.MAT14$finalModel)
-preds.tr.MAT14 <- predict(tr.MAT14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$MAT.MAT14
+cause <- rep("MAT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+MATreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realMAT14 <- countyratesfullcases$MAT.MAT14
+preds.tr.MAT14 <- predict(tr.MAT14$finalModel, newdata = countyratesfullcases)
 MAT14 <- cbind.data.frame(preds.tr.MAT14,realMAT14)
 MAT14 <- MAT14 %>% mutate(MATtreediff = ((preds.tr.MAT14 - realMAT14)/realMAT14))
+mortrate <- MAT14$MATtreediff
+cause <- rep("MAT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+MATtree <- cbind(fips,cause,model,mortrate) 
+
 treeMAT14.mse <- mean((preds.tr.MAT14 - realMAT14)^2)
 treeMAT14.mse
 ```
@@ -359,13 +437,15 @@ preds.knn.tr.MAT14 <- predict(knn.tr.MAT14, newdata = countyratesfullcases)
 realknnMAT14 <- countyratesfullcases$MAT.MAT14
 knnMAT14 <- cbind.data.frame(preds.knn.tr.MAT14,realknnMAT14)
 knnMAT14 <- knnMAT14 %>% mutate(MATknndiff = ((preds.knn.tr.MAT14 - realknnMAT14)/realknnMAT14))
+mortrate <- MAT14$MATtreediff
+cause <- rep("MAT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+MATknn <- cbind(fips,cause,model,mortrate)
+
 knnMAT14.mse <- mean((preds.knn.tr.MAT14 - realknnMAT14)^2)
 knnMAT14.mse
-
-MAT <- cbind(MAT14,knnMAT14)
-MATreal <- MAT$realMAT14
-MATtreediff <- MAT$MATtreediff
-MATknndiff <- MAT$MATknndiff
 ```
 
 
@@ -382,10 +462,26 @@ fitControl <- trainControl(method="cv")
 tr.NEON14 <- train(NEON.NEON14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.NEON14$finalModel)
-preds.tr.NEON14 <- predict(tr.NEON14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$NEON.NEON14
+cause <- rep("NEON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+NEONreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realNEON14 <- countyratesfullcases$NEON.NEON14
+preds.tr.NEON14 <- predict(tr.NEON14$finalModel, newdata = countyratesfullcases)
 NEON14 <- cbind.data.frame(preds.tr.NEON14,realNEON14)
-NEON14 <- NEON14 %>% mutate(NEONtreediff = ((preds.tr.NEON14 - realNEON14)/realNEON14))
+NEON14 <- HIV14 %>% mutate(NEONtreediff = ((preds.tr.NEON14 - realNEON14)/realNEON14))
+mortrate <- NEON14$NEONtreediff
+cause <- rep("NEON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+NEONtree <- cbind(fips,cause,model,mortrate) 
+
 treeNEON14.mse <- mean((preds.tr.NEON14 - realNEON14)^2)
 treeNEON14.mse
 ```
@@ -401,16 +497,18 @@ knn.tr.NEON14 <- train(NEON.NEON14 ~ rep16_frac + dem16_frac + Less.Than.High.Sc
                 data=countyratesfullcases, method="knn", trControl = fitControl, 
                  tuneGrid= data.frame(k=5))
 preds.knn.tr.NEON14 <- predict(knn.tr.NEON14, newdata = countyratesfullcases)
-realknnNEON14 <- countyratesfullcases$NEON.NEON14
+realknnHNEON14 <- countyratesfullcases$NEON.NEON14
 knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
 knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
+mortrate <- NEON14$NEONtreediff
+cause <- rep("NEON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+NEONknn <- cbind(fips,cause,model,mortrate)
+
 knnNEON14.mse <- mean((preds.knn.tr.NEON14 - realknnNEON14)^2)
 knnNEON14.mse
-
-NEON <- cbind(NEON14,knnNEON14)
-NEONreal <- NEON$realNEON14
-NEONtreediff <- NEON$NEONtreediff
-NEONknndiff <- NEON$NEONknndiff
 ```
 
 
@@ -427,10 +525,26 @@ fitControl <- trainControl(method="cv")
 tr.NUT14 <- train(NUT.NUT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.NUT14$finalModel)
-preds.tr.NUT14 <- predict(tr.NUT14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$NUT.NUT14
+cause <- rep("NUT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+NUTreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realNUT14 <- countyratesfullcases$NUT.NUT14
+preds.tr.NUT14 <- predict(tr.NUT14$finalModel, newdata = countyratesfullcases)
 NUT14 <- cbind.data.frame(preds.tr.NUT14,realNUT14)
 NUT14 <- NUT14 %>% mutate(NUTtreediff = ((preds.tr.NUT14 - realNUT14)/realNUT14))
+mortrate <- NUT14$NUTtreediff
+cause <- rep("NUT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+NUTtree <- cbind(fips,cause,model,mortrate) 
+
 treeNUT14.mse <- mean((preds.tr.NUT14 - realNUT14)^2)
 treeNUT14.mse
 ```
@@ -448,14 +562,16 @@ knn.tr.NUT14 <- train(NUT.NUT14 ~ rep16_frac + dem16_frac + Less.Than.High.Schoo
 preds.knn.tr.NUT14 <- predict(knn.tr.NUT14, newdata = countyratesfullcases)
 realknnNUT14 <- countyratesfullcases$NUT.NUT14
 knnNUT14 <- cbind.data.frame(preds.knn.tr.NUT14,realknnNUT14)
-knnNUT14 <- knnHIV14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
+knnNUT14 <- knnNUT14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
+mortrate <- NUT14$NUTtreediff
+cause <- rep("NUT", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+NUTknn <- cbind(fips,cause,model,mortrate)
+
 knnNUT14.mse <- mean((preds.knn.tr.NUT14 - realknnNUT14)^2)
 knnNUT14.mse
-
-NUT <- cbind(NUT14,knnNUT14)
-NUTreal <- NUT$realNUT14
-NUTtreediff <- NUT$NUTtreediff
-NUTknndiff <- NUT$NUTknndiff
 ```
 
 
@@ -471,11 +587,26 @@ set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.OTHC14 <- train(OTHC.OTHC14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
-rpart.plot(tr.OTHC14$finalModel)
-preds.tr.OTHC14 <- predict(tr.OTHC14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$OTHC.OTHC14
+cause <- rep("OTHC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+OTHCreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realOTHC14 <- countyratesfullcases$OTHC.OTHC14
+preds.tr.OTHC14 <- predict(tr.OTHC14$finalModel, newdata = countyratesfullcases)
 OTHC14 <- cbind.data.frame(preds.tr.OTHC14,realOTHC14)
-OTHC14 <- OTHC14 %>% mutate(OTHCtreediff = ((preds.tr.OTHC14 - realOTHC14)/realOTHC14))
+OTHC14 <- HIV14 %>% mutate(OTHCtreediff = ((preds.tr.OTHC14 - realOTHC14)/realOTHC14))
+mortrate <- OTHC14$OTHCtreediff
+cause <- rep("OTHC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+OTHCtree <- cbind(fips,cause,model,mortrate) 
+
 treeOTHC14.mse <- mean((preds.tr.OTHC14 - realOTHC14)^2)
 treeOTHC14.mse
 ```
@@ -494,13 +625,15 @@ preds.knn.tr.OTHC14 <- predict(knn.tr.OTHC14, newdata = countyratesfullcases)
 realknnOTHC14 <- countyratesfullcases$OTHC.OTHC14
 knnOTHC14 <- cbind.data.frame(preds.knn.tr.OTHC14,realknnOTHC14)
 knnOTHC14 <- knnOTHC14 %>% mutate(OTHCknndiff = ((preds.knn.tr.OTHC14 - realknnOTHC14)/realknnOTHC14))
+mortrate <- OTHC14$OTHCtreediff
+cause <- rep("OTHC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+OTHCknn <- cbind(fips,cause,model,mortrate)
+
 knnOTHC14.mse <- mean((preds.knn.tr.OTHC14 - realknnOTHC14)^2)
 knnOTHC14.mse
-
-OTHC <- cbind(OTHC14,knnOTHC14)
-OTHCreal <- OTHC$realOTHC14
-OTHCtreediff <- OTHC$OTHCtreediff
-OTHCknndiff <- OTHC$OTHCknndiff
 ```
 
 
@@ -517,10 +650,26 @@ fitControl <- trainControl(method="cv")
 tr.NEOP14 <- train(NEOP.NEOP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.NEOP14$finalModel)
-preds.tr.NEOP14 <- predict(tr.NEOP14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$NEOP.NEOP14
+cause <- rep("NEOP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+NEOPreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realNEOP14 <- countyratesfullcases$NEOP.NEOP14
+preds.tr.NEOP14 <- predict(tr.NEOP14$finalModel, newdata = countyratesfullcases)
 NEOP14 <- cbind.data.frame(preds.tr.NEOP14,realNEOP14)
 NEOP14 <- NEOP14 %>% mutate(NEOPtreediff = ((preds.tr.NEOP14 - realNEOP14)/realNEOP14))
+mortrate <- NEOP14$NEOPtreediff
+cause <- rep("NEOP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+NEOPtree <- cbind(fips,cause,model,mortrate) 
+
 treeNEOP14.mse <- mean((preds.tr.NEOP14 - realNEOP14)^2)
 treeNEOP14.mse
 ```
@@ -538,14 +687,16 @@ knn.tr.NEOP14 <- train(NEOP.NEOP14 ~ rep16_frac + dem16_frac + Less.Than.High.Sc
 preds.knn.tr.NEOP14 <- predict(knn.tr.NEOP14, newdata = countyratesfullcases)
 realknnNEOP14 <- countyratesfullcases$NEOP.NEOP14
 knnNEOP14 <- cbind.data.frame(preds.knn.tr.NEOP14,realknnNEOP14)
-knnNEOP14 <- knnNEOP14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
+knnNEOP14 <- knnHIV14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
+mortrate <- NEOP14$NEOPtreediff
+cause <- rep("NEOP", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+NEOPknn <- cbind(fips,cause,model,mortrate)
+
 knnNEOP14.mse <- mean((preds.knn.tr.NEOP14 - realknnNEOP14)^2)
 knnNEOP14.mse
-
-NEOP <- cbind(NEOP14,knnNEOP14)
-NEOPreal <- NEOP$realNEOP14
-NEOPtreediff <- NEOP$NEOPtreediff
-NEOPknndiff <- NEOP$NEOPknndiff
 ```
 
 
@@ -562,10 +713,26 @@ fitControl <- trainControl(method="cv")
 tr.CHRON14 <- train(CHRON.CHRON14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.CHRON14$finalModel)
-preds.tr.CHRON14 <- predict(tr.CHRON14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$CHRON.CHRON14
+cause <- rep("CHRON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+CHRONreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realCHRON14 <- countyratesfullcases$CHRON.CHRON14
+preds.tr.CHRON14 <- predict(tr.CHRON14$finalModel, newdata = countyratesfullcases)
 CHRON14 <- cbind.data.frame(preds.tr.CHRON14,realCHRON14)
 CHRON14 <- CHRON14 %>% mutate(CHRONtreediff = ((preds.tr.CHRON14 - realCHRON14)/realCHRON14))
+mortrate <- CHRON14$CHRONtreediff
+cause <- rep("CHRON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+CHRONtree <- cbind(fips,cause,model,mortrate) 
+
 treeCHRON14.mse <- mean((preds.tr.CHRON14 - realCHRON14)^2)
 treeCHRON14.mse
 ```
@@ -583,14 +750,16 @@ knn.tr.CHRON14 <- train(CHRON.CHRON14 ~ rep16_frac + dem16_frac + Less.Than.High
 preds.knn.tr.CHRON14 <- predict(knn.tr.CHRON14, newdata = countyratesfullcases)
 realknnCHRON14 <- countyratesfullcases$CHRON.CHRON14
 knnCHRON14 <- cbind.data.frame(preds.knn.tr.CHRON14,realknnCHRON14)
-knnCHRON14 <- knnCHRON14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
+knnCHRON14 <- knnHIV14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
+mortrate <- CHRON14$CHRONtreediff
+cause <- rep("CHRON", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+CHRONknn <- cbind(fips,cause,model,mortrate)
+
 knnCHRON14.mse <- mean((preds.knn.tr.CHRON14 - realknnCHRON14)^2)
 knnCHRON14.mse
-
-CHRON <- cbind(CHRON14,knnCHRON14)
-CHRONreal <- CHRON$realCHRON14
-CHRONtreediff <- CHRON$CHRONtreediff
-CHRONknndiff <- CHRON$CHRONknndiff
 ```
 
 
@@ -607,10 +776,26 @@ fitControl <- trainControl(method="cv")
 tr.CIRR14 <- train(CIRR.CIRR14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.CIRR14$finalModel)
-preds.tr.CIRR14 <- predict(tr.CIRR14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$CIRR.CIRR14
+cause <- rep("CIRR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+CIRRreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realCIRR14 <- countyratesfullcases$CIRR.CIRR14
+preds.tr.CIRR14 <- predict(tr.CIRR14$finalModel, newdata = countyratesfullcases)
 CIRR14 <- cbind.data.frame(preds.tr.CIRR14,realCIRR14)
 CIRR14 <- CIRR14 %>% mutate(CIRRtreediff = ((preds.tr.CIRR14 - realCIRR14)/realCIRR14))
+mortrate <- CIRR14$CIRRtreediff
+cause <- rep("CIRR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+CIRRtree <- cbind(fips,cause,model,mortrate) 
+
 treeCIRR14.mse <- mean((preds.tr.CIRR14 - realCIRR14)^2)
 treeCIRR14.mse
 ```
@@ -629,13 +814,15 @@ preds.knn.tr.CIRR14 <- predict(knn.tr.CIRR14, newdata = countyratesfullcases)
 realknnCIRR14 <- countyratesfullcases$CIRR.CIRR14
 knnCIRR14 <- cbind.data.frame(preds.knn.tr.CIRR14,realknnCIRR14)
 knnCIRR14 <- knnCIRR14 %>% mutate(CIRRknndiff = ((preds.knn.tr.CIRR14 - realknnCIRR14)/realknnCIRR14))
+mortrate <- CIRR14$CIRRtreediff
+cause <- rep("CIRR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+CIRRknn <- cbind(fips,cause,model,mortrate)
+
 knnCIRR14.mse <- mean((preds.knn.tr.CIRR14 - realknnCIRR14)^2)
 knnCIRR14.mse
-
-CIRR <- cbind(CIRR14,knnCIRR14)
-CIRRreal <- CIRR$realCIRR14
-CIRRtreediff <- CIRR$CIRRtreediff
-CIRRknndiff <- CIRR$CIRRknndiff
 ```
 
 
@@ -652,10 +839,26 @@ fitControl <- trainControl(method="cv")
 tr.DIG14 <- train(DIG.DIG14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.DIG14$finalModel)
-preds.tr.DIG14 <- predict(tr.DIG14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$DIG.DIG14
+cause <- rep("DIG", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+DIGreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realDIG14 <- countyratesfullcases$DIG.DIG14
+preds.tr.DIG14 <- predict(tr.DIG14$finalModel, newdata = countyratesfullcases)
 DIG14 <- cbind.data.frame(preds.tr.DIG14,realDIG14)
 DIG14 <- DIG14 %>% mutate(DIGtreediff = ((preds.tr.DIG14 - realDIG14)/realDIG14))
+mortrate <- DIG14$DIGtreediff
+cause <- rep("DIG", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+DIGtree <- cbind(fips,cause,model,mortrate) 
+
 treeDIG14.mse <- mean((preds.tr.DIG14 - realDIG14)^2)
 treeDIG14.mse
 ```
@@ -674,13 +877,15 @@ preds.knn.tr.DIG14 <- predict(knn.tr.DIG14, newdata = countyratesfullcases)
 realknnDIG14 <- countyratesfullcases$DIG.DIG14
 knnDIG14 <- cbind.data.frame(preds.knn.tr.DIG14,realknnDIG14)
 knnDIG14 <- knnDIG14 %>% mutate(DIGknndiff = ((preds.knn.tr.DIG14 - realknnDIG14)/realknnDIG14))
+mortrate <- DIG14$DIGtreediff
+cause <- rep("DIG", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+DIGknn <- cbind(fips,cause,model,mortrate)
+
 knnDIG14.mse <- mean((preds.knn.tr.DIG14 - realknnDIG14)^2)
 knnDIG14.mse
-
-DIG <- cbind(DIG14,knnDIG14)
-DIGreal <- DIG$realDIG14
-DIGtreediff <- DIG$DIGtreediff
-DIGknndiff <- DIG$DIGknndiff
 ```
 
 
@@ -697,10 +902,26 @@ fitControl <- trainControl(method="cv")
 tr.NEUR14 <- train(NEUR.NEUR14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.NEUR14$finalModel)
-preds.tr.NEUR14 <- predict(tr.NEUR14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$NEUR.NEUR14
+cause <- rep("NEUR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+NEURreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realNEUR14 <- countyratesfullcases$NEUR.NEUR14
+preds.tr.NEUR14 <- predict(tr.NEUR14$finalModel, newdata = countyratesfullcases)
 NEUR14 <- cbind.data.frame(preds.tr.NEUR14,realNEUR14)
 NEUR14 <- NEUR14 %>% mutate(NEURtreediff = ((preds.tr.NEUR14 - realNEUR14)/realNEUR14))
+mortrate <- NEUR14$NEURtreediff
+cause <- rep("NEUR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+NEURtree <- cbind(fips,cause,model,mortrate) 
+
 treeNEUR14.mse <- mean((preds.tr.NEUR14 - realNEUR14)^2)
 treeNEUR14.mse
 ```
@@ -719,13 +940,15 @@ preds.knn.tr.NEUR14 <- predict(knn.tr.NEUR14, newdata = countyratesfullcases)
 realknnNEUR14 <- countyratesfullcases$NEUR.NEUR14
 knnNEUR14 <- cbind.data.frame(preds.knn.tr.NEUR14,realknnNEUR14)
 knnNEUR14 <- knnNEUR14 %>% mutate(NEURknndiff = ((preds.knn.tr.NEUR14 - realknnNEUR14)/realknnNEUR14))
+mortrate <- NEUR14$NEURtreediff
+cause <- rep("NEUR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+NEURknn <- cbind(fips,cause,model,mortrate)
+
 knnNEUR14.mse <- mean((preds.knn.tr.NEUR14 - realknnNEUR14)^2)
 knnNEUR14.mse
-
-NEUR <- cbind(NEUR14,knnNEUR14)
-NEURreal <- NEUR$realNEUR14
-NEURtreediff <- NEUR$NEURtreediff
-NEURknndiff <- NEUR$NEURknndiff
 ```
 
 
@@ -742,10 +965,26 @@ fitControl <- trainControl(method="cv")
 tr.MENSUB14 <- train(MENSUB.MENSUB14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.MENSUB14$finalModel)
-preds.tr.MENSUB14 <- predict(tr.MENSUB14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$MENSUB.MENSUB14
+cause <- rep("MENSUB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+MENSUBreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
+preds.tr.MENSUB14 <- predict(tr.MENSUB14$finalModel, newdata = countyratesfullcases)
 MENSUB14 <- cbind.data.frame(preds.tr.MENSUB14,realMENSUB14)
 MENSUB14 <- MENSUB14 %>% mutate(MENSUBtreediff = ((preds.tr.MENSUB14 - realMENSUB14)/realMENSUB14))
+mortrate <- MENSUB14$MENSUBtreediff
+cause <- rep("MENSUB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+MENSUBtree <- cbind(fips,cause,model,mortrate) 
+
 treeMENSUB14.mse <- mean((preds.tr.MENSUB14 - realMENSUB14)^2)
 treeMENSUB14.mse
 ```
@@ -763,14 +1002,16 @@ knn.tr.MENSUB14 <- train(MENSUB.MENSUB14 ~ rep16_frac + dem16_frac + Less.Than.H
 preds.knn.tr.MENSUB14 <- predict(knn.tr.MENSUB14, newdata = countyratesfullcases)
 realknnMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
 knnMENSUB14 <- cbind.data.frame(preds.knn.tr.MENSUB14,realknnMENSUB14)
-knnMENSUB14 <- knnMENSUB14 %>% mutate(MENSUBknndiff = ((preds.knn.tr.MENSUB14 - realknnMENSUB14)/realknnMENSUB14))
+knnMENSUB14 <- knnHIV14 %>% mutate(MENSUBknndiff = ((preds.knn.tr.MENSUB14 - realknnMENSUB14)/realknnMENSUB14))
+mortrate <- MENSUB14$MENSUBtreediff
+cause <- rep("MENSUB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+MENSUBknn <- cbind(fips,cause,model,mortrate)
+
 knnMENSUB14.mse <- mean((preds.knn.tr.MENSUB14 - realknnMENSUB14)^2)
 knnMENSUB14.mse
-
-MENSUB <- cbind(MENSUB14,knnMENSUB14)
-MENSUBreal <- MENSUB$realMENSUB14
-MENSUBtreediff <- MENSUB$MENSUBtreediff
-MENSUBknndiff <- MENSUB$MENSUBknndiff
 ```
 
 
@@ -787,10 +1028,26 @@ fitControl <- trainControl(method="cv")
 tr.DIAB14 <- train(DIAB.DIAB14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.DIAB14$finalModel)
-preds.tr.DIAB14 <- predict(tr.DIAB14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$DIAB.DIAB14
+cause <- rep("DIAB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+DIABreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realDIAB14 <- countyratesfullcases$DIAB.DIAB14
+preds.tr.DIAB14 <- predict(tr.DIAB14$finalModel, newdata = countyratesfullcases)
 DIAB14 <- cbind.data.frame(preds.tr.DIAB14,realDIAB14)
-DIAB14 <- DIAB14 %>% mutate(DIABtreediff = ((preds.tr.DIAB14 - realDIAB14)/realDIAB14))
+DIAB14 <- HIV14 %>% mutate(DIABtreediff = ((preds.tr.DIAB14 - realDIAB14)/realDIAB14))
+mortrate <- DIAB14$HIVtreediff
+cause <- rep("DIAB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+DIABtree <- cbind(fips,cause,model,mortrate) 
+
 treeDIAB14.mse <- mean((preds.tr.DIAB14 - realDIAB14)^2)
 treeDIAB14.mse
 ```
@@ -809,13 +1066,15 @@ preds.knn.tr.DIAB14 <- predict(knn.tr.DIAB14, newdata = countyratesfullcases)
 realknnDIAB14 <- countyratesfullcases$DIAB.DIAB14
 knnDIAB14 <- cbind.data.frame(preds.knn.tr.DIAB14,realknnDIAB14)
 knnDIAB14 <- knnDIAB14 %>% mutate(DIABknndiff = ((preds.knn.tr.DIAB14 - realknnDIAB14)/realknnDIAB14))
+mortrate <- DIAB14$DIABtreediff
+cause <- rep("DIAB", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+DIABknn <- cbind(fips,cause,model,mortrate)
+
 knnDIAB14.mse <- mean((preds.knn.tr.DIAB14 - realknnDIAB14)^2)
 knnDIAB14.mse
-
-DIAB <- cbind(DIAB14,knnDIAB14)
-DIABreal <- DIAB$realDIAB14
-DIABtreediff <- DIAB$DIABtreediff
-DIABknndiff <- DIAB$DIABknndiff
 ```
 
 
@@ -832,10 +1091,26 @@ fitControl <- trainControl(method="cv")
 tr.MUSC14 <- train(MUSC.MUSC14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.MUSC14$finalModel)
-preds.tr.MUSC14 <- predict(tr.MUSC14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$MUSC.MUSC14
+cause <- rep("MUSC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+MUSCreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realMUSC14 <- countyratesfullcases$MUSC.MUSC14
+preds.tr.MUSC14 <- predict(tr.MUSC14$finalModel, newdata = countyratesfullcases)
 MUSC14 <- cbind.data.frame(preds.tr.MUSC14,realMUSC14)
-MUSC14 <- MUSC14 %>% mutate(MUSCtreediff = ((preds.tr.MUSC14 - realMUSC14)/realMUSC14))
+MUSC14 <- HIV14 %>% mutate(MUSCtreediff = ((preds.tr.MUSC14 - realMUSC14)/realMUSC14))
+mortrate <- MUSC14$MUSCtreediff
+cause <- rep("MUSC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+MUSCtree <- cbind(fips,cause,model,mortrate) 
+
 treeMUSC14.mse <- mean((preds.tr.MUSC14 - realMUSC14)^2)
 treeMUSC14.mse
 ```
@@ -854,13 +1129,15 @@ preds.knn.tr.MUSC14 <- predict(knn.tr.MUSC14, newdata = countyratesfullcases)
 realknnMUSC14 <- countyratesfullcases$MUSC.MUSC14
 knnMUSC14 <- cbind.data.frame(preds.knn.tr.MUSC14,realknnMUSC14)
 knnMUSC14 <- knnMUSC14 %>% mutate(MUSCknndiff = ((preds.knn.tr.MUSC14 - realknnMUSC14)/realknnMUSC14))
+mortrate <- MUSC14$MUSCtreediff
+cause <- rep("MUSC", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+MUSCknn <- cbind(fips,cause,model,mortrate)
+
 knnMUSC14.mse <- mean((preds.knn.tr.MUSC14 - realknnMUSC14)^2)
 knnMUSC14.mse
-
-MUSC <- cbind(MUSC14,knnMUSC14)
-MUSCreal <- MUSC$realMUSC14
-MUSCtreediff <- MUSC$MUSCtreediff
-MUSCknndiff <- MUSC$MUSCknndiff
 ```
 
 
@@ -877,10 +1154,26 @@ fitControl <- trainControl(method="cv")
 tr.OTHN14 <- train(OTHN.OTHN14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.OTHN14$finalModel)
-preds.tr.OTHN14 <- predict(tr.OTHN14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$OTHN.OTHN14
+cause <- rep("OTHN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+OTHNreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realOTHN14 <- countyratesfullcases$OTHN.OTHN14
+preds.tr.OTHN14 <- predict(tr.OTHN14$finalModel, newdata = countyratesfullcases)
 OTHN14 <- cbind.data.frame(preds.tr.OTHN14,realOTHN14)
 OTHN14 <- OTHN14 %>% mutate(OTHNtreediff = ((preds.tr.OTHN14 - realOTHN14)/realOTHN14))
+mortrate <- OTHN14$OTHNtreediff
+cause <- rep("OTHN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+OTHNtree <- cbind(fips,cause,model,mortrate) 
+
 treeOTHN14.mse <- mean((preds.tr.OTHN14 - realOTHN14)^2)
 treeOTHN14.mse
 ```
@@ -898,14 +1191,16 @@ knn.tr.OTHN14 <- train(OTHN.OTHN14 ~ rep16_frac + dem16_frac + Less.Than.High.Sc
 preds.knn.tr.OTHN14 <- predict(knn.tr.OTHN14, newdata = countyratesfullcases)
 realknnOTHN14 <- countyratesfullcases$OTHN.OTHN14
 knnOTHN14 <- cbind.data.frame(preds.knn.tr.OTHN14,realknnOTHN14)
-knnOTHN14 <- knnOTHN14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
+knnOTHN14 <- knnHIV14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
+mortrate <- OTHN14$OTHNtreediff
+cause <- rep("OTHN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+OTHNknn <- cbind(fips,cause,model,mortrate)
+
 knnOTHN14.mse <- mean((preds.knn.tr.OTHN14 - realknnOTHN14)^2)
 knnOTHN14.mse
-
-OTHN <- cbind(OTHN14,knnOTHN14)
-OTHNreal <- OTHN$realOTHN14
-OTHNtreediff <- OTHN$OTHNtreediff
-OTHNknndiff <- OTHN$OTHNknndiff
 ```
 
 
@@ -922,10 +1217,26 @@ fitControl <- trainControl(method="cv")
 tr.TRAN14 <- train(TRAN.TRAN14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.TRAN14$finalModel)
-preds.tr.TRAN14 <- predict(tr.TRAN14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$TRAN.TRAN14
+cause <- rep("TRAN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+TRANreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realTRAN14 <- countyratesfullcases$TRAN.TRAN14
+preds.tr.TRAN14 <- predict(tr.TRAN14$finalModel, newdata = countyratesfullcases)
 TRAN14 <- cbind.data.frame(preds.tr.TRAN14,realTRAN14)
 TRAN14 <- TRAN14 %>% mutate(TRANtreediff = ((preds.tr.TRAN14 - realTRAN14)/realTRAN14))
+mortrate <- TRAN14$TRANtreediff
+cause <- rep("TRAN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+TRANtree <- cbind(fips,cause,model,mortrate) 
+
 treeTRAN14.mse <- mean((preds.tr.TRAN14 - realTRAN14)^2)
 treeTRAN14.mse
 ```
@@ -944,13 +1255,15 @@ preds.knn.tr.TRAN14 <- predict(knn.tr.TRAN14, newdata = countyratesfullcases)
 realknnTRAN14 <- countyratesfullcases$TRAN.TRAN14
 knnTRAN14 <- cbind.data.frame(preds.knn.tr.TRAN14,realknnTRAN14)
 knnTRAN14 <- knnTRAN14 %>% mutate(TRANknndiff = ((preds.knn.tr.TRAN14 - realknnTRAN14)/realknnTRAN14))
+mortrate <- TRAN14$TRANtreediff
+cause <- rep("TRAN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+TRANknn <- cbind(fips,cause,model,mortrate)
+
 knnTRAN14.mse <- mean((preds.knn.tr.TRAN14 - realknnTRAN14)^2)
 knnTRAN14.mse
-
-TRAN <- cbind(TRAN14,knnTRAN14)
-TRANreal <- TRAN$realTRAN14
-TRANtreediff <- TRAN$TRANtreediff
-TRANknndiff <- TRAN$TRANknndiff
 ```
 
 
@@ -967,10 +1280,26 @@ fitControl <- trainControl(method="cv")
 tr.UNIN14 <- train(UNIN.UNIN14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.UNIN14$finalModel)
-preds.tr.UNIN14 <- predict(tr.UNIN14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$UNIN.UNIN14
+cause <- rep("UNIN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+UNINreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realUNIN14 <- countyratesfullcases$UNIN.UNIN14
+preds.tr.UNIN14 <- predict(tr.UNIN14$finalModel, newdata = countyratesfullcases)
 UNIN14 <- cbind.data.frame(preds.tr.UNIN14,realUNIN14)
 UNIN14 <- UNIN14 %>% mutate(UNINtreediff = ((preds.tr.UNIN14 - realUNIN14)/realUNIN14))
+mortrate <- UNIN14$UNINtreediff
+cause <- rep("UNIN", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+UNINtree <- cbind(fips,cause,model,mortrate) 
+
 treeUNIN14.mse <- mean((preds.tr.UNIN14 - realUNIN14)^2)
 treeUNIN14.mse
 ```
@@ -989,13 +1318,15 @@ preds.knn.tr.UNIN14 <- predict(knn.tr.UNIN14, newdata = countyratesfullcases)
 realknnUNIN14 <- countyratesfullcases$UNIN.UNIN14
 knnUNIN14 <- cbind.data.frame(preds.knn.tr.UNIN14,realknnUNIN14)
 knnUNIN14 <- knnUNIN14 %>% mutate(UNINknndiff = ((preds.knn.tr.UNIN14 - realknnUNIN14)/realknnUNIN14))
+mortrate <- UNIN14$UNINtreediff
+cause <- rep("HIV", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+UNINknn <- cbind(fips,cause,model,mortrate)
+
 knnUNIN14.mse <- mean((preds.knn.tr.UNIN14 - realknnUNIN14)^2)
 knnUNIN14.mse
-
-UNIN <- cbind(UNIN14,knnUNIN14)
-UNINreal <- UNIN$realUNIN14
-UNINtreediff <- UNIN$UNINtreediff
-UNINknndiff <- UNIN$UNINknndiff
 ```
 
 
@@ -1012,10 +1343,26 @@ fitControl <- trainControl(method="cv")
 tr.SELF14 <- train(SELF.SELF14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.SELF14$finalModel)
-preds.tr.SELF14 <- predict(tr.SELF14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$SELF.SELF14
+cause <- rep("SELF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+SELFreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realSELF14 <- countyratesfullcases$SELF.SELF14
+preds.tr.SELF14 <- predict(tr.SELF14$finalModel, newdata = countyratesfullcases)
 SELF14 <- cbind.data.frame(preds.tr.SELF14,realSELF14)
 SELF14 <- SELF14 %>% mutate(SELFtreediff = ((preds.tr.SELF14 - realSELF14)/realSELF14))
+mortrate <- SELF14$SELFtreediff
+cause <- rep("SELF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+SELFtree <- cbind(fips,cause,model,mortrate) 
+
 treeSELF14.mse <- mean((preds.tr.SELF14 - realSELF14)^2)
 treeSELF14.mse
 ```
@@ -1034,13 +1381,15 @@ preds.knn.tr.SELF14 <- predict(knn.tr.SELF14, newdata = countyratesfullcases)
 realknnSELF14 <- countyratesfullcases$SELF.SELF14
 knnSELF14 <- cbind.data.frame(preds.knn.tr.SELF14,realknnSELF14)
 knnSELF14 <- knnSELF14 %>% mutate(SELFknndiff = ((preds.knn.tr.SELF14 - realknnSELF14)/realknnSELF14))
+mortrate <- SELF14$SELFtreediff
+cause <- rep("SELF", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+SELFknn <- cbind(fips,cause,model,mortrate)
+
 knnSELF14.mse <- mean((preds.knn.tr.SELF14 - realknnSELF14)^2)
 knnSELF14.mse
-
-SELF <- cbind(SELF14,knnSELF14)
-SELFreal <- SELF$realSELF14
-SELFtreediff <- SELF$SELFtreediff
-SELFknndiff <- SELF$SELFknndiff
 ```
 
 
@@ -1057,10 +1406,26 @@ fitControl <- trainControl(method="cv")
 tr.WAR14 <- train(WAR.WAR14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.WAR14$finalModel)
-preds.tr.WAR14 <- predict(tr.WAR14$finalModel, newdata = countyratesfullcases)
+mortrate <- countyratesfullcases$WAR.WAR14
+cause <- rep("WAR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("real", 3110)
+model <- as.data.frame(model)
+WARreal <- cbind(fips,cause,model,mortrate)
+```
+
+```{r}
 realWAR14 <- countyratesfullcases$WAR.WAR14
+preds.tr.WAR14 <- predict(tr.WAR14$finalModel, newdata = countyratesfullcases)
 WAR14 <- cbind.data.frame(preds.tr.WAR14,realWAR14)
 WAR14 <- WAR14 %>% mutate(WARtreediff = ((preds.tr.WAR14 - realWAR14)/realWAR14))
+mortrate <- WAR14$WARtreediff
+cause <- rep("WAR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("tree", 3110)
+model <- as.data.frame(model)
+WARtree <- cbind(fips,cause,model,mortrate) 
+
 treeWAR14.mse <- mean((preds.tr.WAR14 - realWAR14)^2)
 treeWAR14.mse
 ```
@@ -1079,13 +1444,15 @@ preds.knn.tr.WAR14 <- predict(knn.tr.WAR14, newdata = countyratesfullcases)
 realknnWAR14 <- countyratesfullcases$WAR.WAR14
 knnWAR14 <- cbind.data.frame(preds.knn.tr.WAR14,realknnWAR14)
 knnWAR14 <- knnWAR14 %>% mutate(WARknndiff = ((preds.knn.tr.WAR14 - realknnWAR14)/realknnWAR14))
+mortrate <- WAR14$WARtreediff
+cause <- rep("WAR", 3110)
+cause <- as.data.frame(cause)
+model <- rep("knn", 3110)
+model <- as.data.frame(model)
+WARknn <- cbind(fips,cause,model,mortrate)
+
 knnWAR14.mse <- mean((preds.knn.tr.WAR14 - realknnWAR14)^2)
 knnWAR14.mse
-
-WAR <- cbind(WAR14,knnWAR14)
-WARreal <- WAR$realWAR14
-WARtreediff <- WAR$WARtreediff
-WARknndiff <- WAR$WARknndiff
 ```
 
 
@@ -1094,29 +1461,27 @@ WARknndiff <- WAR$WARknndiff
 
 ```{r echo =FALSE}
 fips <- countyratesfullcases$fips
-latitude <- countyratesfullcases$latitude
-longitude <- countyratesfullcases$longitude
-results  <- cbind.data.frame(fips,latitude,longitude,
-      HIVreal,HIVtreediff,HIVknndiff,
-      INFreal,INFtreediff,INFknndiff,
-      TROPreal,TROPtreediff,TROPknndiff,
-      MATreal,MATtreediff,MATknndiff,
-      NEONreal,NEONtreediff,NEONknndiff,
-      NUTreal,NUTtreediff,NUTknndiff,
-      OTHCreal,OTHCtreediff,OTHCknndiff,
-      NEOPreal,NEOPtreediff,NEOPknndiff,
-      CHRONreal,CHRONtreediff,CHRONknndiff,
-      CIRRreal,CIRRtreediff,CIRRknndiff,
-      DIGreal,DIGtreediff,DIGknndiff,
-      NEURreal,NEURtreediff,NEURknndiff,
-      MENSUBreal,MENSUBtreediff,MENSUBknndiff,
-      DIABreal,DIABtreediff,DIABknndiff,
-      MUSCreal,MUSCtreediff,MUSCknndiff,
-      OTHNreal,OTHNtreediff,OTHNknndiff,
-      TRANreal,TRANtreediff,TRANknndiff,
-      UNINreal,UNINtreediff,UNINknndiff,
-      SELFreal,SELFtreediff,SELFknndiff,
-      WARreal,WARtreediff,WARknndiff)
+results  <- rbind.data.frame(
+      HIVreal,HIVtree,HIVknn,
+      INFreal,INFtree,INFknn,
+      TROPreal,TROPtree,TROPknn,
+      MATreal,MATtree,MATknn,
+      NEONreal,NEONtree,NEONknn,
+      NUTreal,NUTtree,NUTknn,
+      OTHCreal,OTHCtree,OTHCknn,
+      NEOPreal,NEOPtree,NEOPknn,
+      CHRONreal,CHRONtree,CHRONknn,
+      CIRRreal,CIRRtree,CIRRknn,
+      DIGreal,DIGtree,DIGknn,
+      NEURreal,NEURtree,NEURknn,
+      MENSUBreal,MENSUBtree,MENSUBknn,
+      DIABreal,DIABtree,DIABknn,
+      MUSCreal,MUSCtree,MUSCknn,
+      OTHNreal,OTHNtree,OTHNknn,
+      TRANreal,TRANtree,TRANknn,
+      UNINreal,UNINtree,UNINknn,
+      SELFreal,SELFtree,SELFknn,
+      WARreal,WARtree,WARknn)
 View(results)
 
 ```
