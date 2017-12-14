@@ -10,10 +10,13 @@ knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=60),tidy=TRUE)
 
 **Introduction**
 
+Mortality rates from many causes of death are known to vary across counties. We wanted to explore what other factors about counties are correlated to county-level mortality rates from various causes to better understand what some causes of the relative geographic prevalence of different causes of death may be. Our analysis and visualizations display actual variation in causes of death between counties, and show both the power and the shortcomings of using statistical modelling techniques to estimate causes of death based on other factors about counties.
+
 
 
 **Motivation/Purpose**
 
+It is understood that mortality rates from different causes vary between regions of the United States and even between counties in the same state, but those differences and potential reasons for them have not been systematically explored.
 
 **Background**
 
@@ -174,7 +177,7 @@ To give a sense for our model-building process, we have included the R code for 
 
 *HIV: HIV-AIDS and Tuberculosis*
 
-Regression tree
+Regression tree and mean square error
 
 ```{r}
 set.seed(1)
@@ -195,10 +198,12 @@ preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
 realHIV14 <- countyratesfullcases$HIV.HIV14
 HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
 HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+treeHIV14.mse <- mean((preds.tr.HIV14 - realHIV14)^2)
+treeHIV14.mse
 ```
 
 
-k-Nearest Neighbors
+k-Nearest Neighbors mean square error
 
 
 ```{r}
@@ -222,6 +227,11 @@ knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
 knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
 knnHIV14.mse <- mean((preds.knn.tr.HIV14 - realknnHIV14)^2)
 knnHIV14.mse
+
+HIV <- cbind(HIV14,knnHIV14)
+HIVreal <- HIV$realHIV14
+HIVtreediff <- HIV$HIVtreediff
+HIVknndiff <- HIV$HIVknndiff
 ```
 
 
@@ -229,6 +239,7 @@ knnHIV14.mse
 
 *INF: Diarrhea, lower respiratory, and other common infectious diseases*
 
+Regression tree and mean square error
 
 ```{r echo=FALSE}
 set.seed(1)
@@ -240,7 +251,13 @@ preds.tr.INF14 <- predict(tr.INF14$finalModel, newdata = countyratesfullcases)
 realINF14 <- countyratesfullcases$INF.INF14
 INF14 <- cbind.data.frame(preds.tr.INF14,realINF14)
 INF14 <- INF14 %>% mutate(INFtreediff = ((preds.tr.INF14 - realINF14)/realINF14))
+treeINF14.mse <- mean((preds.tr.INF14 - realINF14)^2)
+treeINF14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -254,12 +271,19 @@ knnINF14 <- cbind.data.frame(preds.knn.tr.INF14,realknnINF14)
 knnINF14 <- knnINF14 %>% mutate(INFknndiff = ((preds.knn.tr.INF14 - realknnINF14)/realknnINF14))
 knnINF14.mse <- mean((preds.knn.tr.INF14 - realknnINF14)^2)
 knnINF14.mse
+
+INF <- cbind(INF14,knnINF14)
+INFreal <- INF$realINF14
+INFtreediff <- INF$INFtreediff
+INFknndiff <- INF$INFknndiff
 ```
 
 
 \newpage
 
 *TROP: Neglected tropical diseases and malaria*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -272,7 +296,13 @@ preds.tr.TROP14 <- predict(tr.TROP14$finalModel, newdata = countyratesfullcases)
 realTROP14 <- countyratesfullcases$TROP.TROP14
 TROP14 <- cbind.data.frame(preds.tr.TROP14,realTROP14)
 TROP14 <- TROP14 %>% mutate(TROPtreediff = ((preds.tr.TROP14 - realTROP14)/realTROP14))
+treeTROP14.mse <- mean((preds.tr.TROP14 - realTROP14)^2)
+treeTROP14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -286,12 +316,19 @@ knnTROP14 <- cbind.data.frame(preds.knn.tr.TROP14,realknnTROP14)
 knnTROP14 <- knnTROP14 %>% mutate(TROPknndiff = ((preds.knn.tr.TROP14 - realknnTROP14)/realknnTROP14))
 knnTROP14.mse <- mean((preds.knn.tr.TROP14 - realknnTROP14)^2)
 knnTROP14.mse
+
+TROP <- cbind(TROP14,knnTROP14)
+TROPreal <- TROP$realTROP14
+TROPtreediff <- TROP$TROPtreediff
+TROPknndiff <- TROP$TROPknndiff
 ```
 
 
 \newpage
 
 *MAT: Maternal disorders*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -304,7 +341,13 @@ preds.tr.MAT14 <- predict(tr.MAT14$finalModel, newdata = countyratesfullcases)
 realMAT14 <- countyratesfullcases$MAT.MAT14
 MAT14 <- cbind.data.frame(preds.tr.MAT14,realMAT14)
 MAT14 <- MAT14 %>% mutate(MATtreediff = ((preds.tr.MAT14 - realMAT14)/realMAT14))
+treeMAT14.mse <- mean((preds.tr.MAT14 - realMAT14)^2)
+treeMAT14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -318,12 +361,19 @@ knnMAT14 <- cbind.data.frame(preds.knn.tr.MAT14,realknnMAT14)
 knnMAT14 <- knnMAT14 %>% mutate(MATknndiff = ((preds.knn.tr.MAT14 - realknnMAT14)/realknnMAT14))
 knnMAT14.mse <- mean((preds.knn.tr.MAT14 - realknnMAT14)^2)
 knnMAT14.mse
+
+MAT <- cbind(MAT14,knnMAT14)
+MATreal <- MAT$realMAT14
+MATtreediff <- MAT$MATtreediff
+MATknndiff <- MAT$MATknndiff
 ```
 
 
 \newpage
 
 *NEON: Neonatal disorders*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -336,7 +386,13 @@ preds.tr.NEON14 <- predict(tr.NEON14$finalModel, newdata = countyratesfullcases)
 realNEON14 <- countyratesfullcases$NEON.NEON14
 NEON14 <- cbind.data.frame(preds.tr.NEON14,realNEON14)
 NEON14 <- NEON14 %>% mutate(NEONtreediff = ((preds.tr.NEON14 - realNEON14)/realNEON14))
+treeNEON14.mse <- mean((preds.tr.NEON14 - realNEON14)^2)
+treeNEON14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -350,12 +406,19 @@ knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
 knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
 knnNEON14.mse <- mean((preds.knn.tr.NEON14 - realknnNEON14)^2)
 knnNEON14.mse
+
+NEON <- cbind(NEON14,knnNEON14)
+NEONreal <- NEON$realNEON14
+NEONtreediff <- NEON$NEONtreediff
+NEONknndiff <- NEON$NEONknndiff
 ```
 
 
 \newpage
 
 *NUT: Nutritional deficiencies*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -368,7 +431,13 @@ preds.tr.NUT14 <- predict(tr.NUT14$finalModel, newdata = countyratesfullcases)
 realNUT14 <- countyratesfullcases$NUT.NUT14
 NUT14 <- cbind.data.frame(preds.tr.NUT14,realNUT14)
 NUT14 <- NUT14 %>% mutate(NUTtreediff = ((preds.tr.NUT14 - realNUT14)/realNUT14))
+treeNUT14.mse <- mean((preds.tr.NUT14 - realNUT14)^2)
+treeNUT14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -382,12 +451,19 @@ knnNUT14 <- cbind.data.frame(preds.knn.tr.NUT14,realknnNUT14)
 knnNUT14 <- knnHIV14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
 knnNUT14.mse <- mean((preds.knn.tr.NUT14 - realknnNUT14)^2)
 knnNUT14.mse
+
+NUT <- cbind(NUT14,knnNUT14)
+NUTreal <- NUT$realNUT14
+NUTtreediff <- NUT$NUTtreediff
+NUTknndiff <- NUT$NUTknndiff
 ```
 
 
 \newpage
 
 *OTHC: Other communicable, maternal, neonatal, and nutritional diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -400,7 +476,13 @@ preds.tr.OTHC14 <- predict(tr.OTHC14$finalModel, newdata = countyratesfullcases)
 realOTHC14 <- countyratesfullcases$OTHC.OTHC14
 OTHC14 <- cbind.data.frame(preds.tr.OTHC14,realOTHC14)
 OTHC14 <- OTHC14 %>% mutate(OTHCtreediff = ((preds.tr.OTHC14 - realOTHC14)/realOTHC14))
+treeOTHC14.mse <- mean((preds.tr.OTHC14 - realOTHC14)^2)
+treeOTHC14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -414,12 +496,19 @@ knnOTHC14 <- cbind.data.frame(preds.knn.tr.OTHC14,realknnOTHC14)
 knnOTHC14 <- knnOTHC14 %>% mutate(OTHCknndiff = ((preds.knn.tr.OTHC14 - realknnOTHC14)/realknnOTHC14))
 knnOTHC14.mse <- mean((preds.knn.tr.OTHC14 - realknnOTHC14)^2)
 knnOTHC14.mse
+
+OTHC <- cbind(OTHC14,knnOTHC14)
+OTHCreal <- OTHC$realOTHC14
+OTHCtreediff <- OTHC$OTHCtreediff
+OTHCknndiff <- OTHC$OTHCknndiff
 ```
 
 
 \newpage
 
 *NEOP: Neoplasms*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -432,7 +521,13 @@ preds.tr.NEOP14 <- predict(tr.NEOP14$finalModel, newdata = countyratesfullcases)
 realNEOP14 <- countyratesfullcases$NEOP.NEOP14
 NEOP14 <- cbind.data.frame(preds.tr.NEOP14,realNEOP14)
 NEOP14 <- NEOP14 %>% mutate(NEOPtreediff = ((preds.tr.NEOP14 - realNEOP14)/realNEOP14))
+treeNEOP14.mse <- mean((preds.tr.NEOP14 - realNEOP14)^2)
+treeNEOP14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -446,12 +541,19 @@ knnNEOP14 <- cbind.data.frame(preds.knn.tr.NEOP14,realknnNEOP14)
 knnNEOP14 <- knnNEOP14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
 knnNEOP14.mse <- mean((preds.knn.tr.NEOP14 - realknnNEOP14)^2)
 knnNEOP14.mse
+
+NEOP <- cbind(NEOP14,knnNEOP14)
+NEOPreal <- NEOP$realNEOP14
+NEOPtreediff <- NEOP$NEOPtreediff
+NEOPknndiff <- NEOP$NEOPknndiff
 ```
 
 
 \newpage
 
 *CHRON: Chronic respiratory diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -464,7 +566,13 @@ preds.tr.CHRON14 <- predict(tr.CHRON14$finalModel, newdata = countyratesfullcase
 realCHRON14 <- countyratesfullcases$CHRON.CHRON14
 CHRON14 <- cbind.data.frame(preds.tr.CHRON14,realCHRON14)
 CHRON14 <- CHRON14 %>% mutate(CHRONtreediff = ((preds.tr.CHRON14 - realCHRON14)/realCHRON14))
+treeCHRON14.mse <- mean((preds.tr.CHRON14 - realCHRON14)^2)
+treeCHRON14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -478,12 +586,19 @@ knnCHRON14 <- cbind.data.frame(preds.knn.tr.CHRON14,realknnCHRON14)
 knnCHRON14 <- knnCHRON14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
 knnCHRON14.mse <- mean((preds.knn.tr.CHRON14 - realknnCHRON14)^2)
 knnCHRON14.mse
+
+CHRON <- cbind(CHRON14,knnCHRON14)
+CHRONreal <- CHRON$realCHRON14
+CHRONtreediff <- CHRON$CHRONtreediff
+CHRONknndiff <- CHRON$CHRONknndiff
 ```
 
 
 \newpage
 
 *CIRR: Cirrhosis and other chronic liver diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -496,7 +611,13 @@ preds.tr.CIRR14 <- predict(tr.CIRR14$finalModel, newdata = countyratesfullcases)
 realCIRR14 <- countyratesfullcases$CIRR.CIRR14
 CIRR14 <- cbind.data.frame(preds.tr.CIRR14,realCIRR14)
 CIRR14 <- CIRR14 %>% mutate(CIRRtreediff = ((preds.tr.CIRR14 - realCIRR14)/realCIRR14))
+treeCIRR14.mse <- mean((preds.tr.CIRR14 - realCIRR14)^2)
+treeCIRR14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -510,12 +631,19 @@ knnCIRR14 <- cbind.data.frame(preds.knn.tr.CIRR14,realknnCIRR14)
 knnCIRR14 <- knnCIRR14 %>% mutate(CIRRknndiff = ((preds.knn.tr.CIRR14 - realknnCIRR14)/realknnCIRR14))
 knnCIRR14.mse <- mean((preds.knn.tr.CIRR14 - realknnCIRR14)^2)
 knnCIRR14.mse
+
+CIRR <- cbind(CIRR14,knnCIRR14)
+CIRRreal <- CIRR$realCIRR14
+CIRRtreediff <- CIRR$CIRRtreediff
+CIRRknndiff <- CIRR$CIRRknndiff
 ```
 
 
 \newpage
 
 *DIG: Digestive diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -528,7 +656,13 @@ preds.tr.DIG14 <- predict(tr.DIG14$finalModel, newdata = countyratesfullcases)
 realDIG14 <- countyratesfullcases$DIG.DIG14
 DIG14 <- cbind.data.frame(preds.tr.DIG14,realDIG14)
 DIG14 <- DIG14 %>% mutate(DIGtreediff = ((preds.tr.DIG14 - realDIG14)/realDIG14))
+treeDIG14.mse <- mean((preds.tr.DIG14 - realDIG14)^2)
+treeDIG14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -542,12 +676,19 @@ knnDIG14 <- cbind.data.frame(preds.knn.tr.DIG14,realknnDIG14)
 knnDIG14 <- knnDIG14 %>% mutate(DIGknndiff = ((preds.knn.tr.DIG14 - realknnDIG14)/realknnDIG14))
 knnDIG14.mse <- mean((preds.knn.tr.DIG14 - realknnDIG14)^2)
 knnDIG14.mse
+
+DIG <- cbind(DIG14,knnDIG14)
+DIGreal <- DIG$realDIG14
+DIGtreediff <- DIG$DIGtreediff
+DIGknndiff <- DIG$DIGknndiff
 ```
 
 
 \newpage
 
 *NEUR: Neurological disorders*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -560,7 +701,13 @@ preds.tr.NEUR14 <- predict(tr.NEUR14$finalModel, newdata = countyratesfullcases)
 realNEUR14 <- countyratesfullcases$NEUR.NEUR14
 NEUR14 <- cbind.data.frame(preds.tr.NEUR14,realNEUR14)
 NEUR14 <- NEUR14 %>% mutate(NEURtreediff = ((preds.tr.NEUR14 - realNEUR14)/realNEUR14))
+treeNEUR14.mse <- mean((preds.tr.NEUR14 - realNEUR14)^2)
+treeNEUR14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -574,12 +721,19 @@ knnNEUR14 <- cbind.data.frame(preds.knn.tr.NEUR14,realknnNEUR14)
 knnNEUR14 <- knnNEUR14 %>% mutate(NEURknndiff = ((preds.knn.tr.NEUR14 - realknnNEUR14)/realknnNEUR14))
 knnNEUR14.mse <- mean((preds.knn.tr.NEUR14 - realknnNEUR14)^2)
 knnNEUR14.mse
+
+NEUR <- cbind(NEUR14,knnNEUR14)
+NEURreal <- NEUR$realNEUR14
+NEURtreediff <- NEUR$NEURtreediff
+NEURknndiff <- NEUR$NEURknndiff
 ```
 
 
 \newpage
 
 *MENSUB: Mental and substance use disorders*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -592,7 +746,13 @@ preds.tr.MENSUB14 <- predict(tr.MENSUB14$finalModel, newdata = countyratesfullca
 realMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
 MENSUB14 <- cbind.data.frame(preds.tr.MENSUB14,realMENSUB14)
 MENSUB14 <- MENSUB14 %>% mutate(MENSUBtreediff = ((preds.tr.MENSUB14 - realMENSUB14)/realMENSUB14))
+treeMENSUB14.mse <- mean((preds.tr.MENSUB14 - realMENSUB14)^2)
+treeMENSUB14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -606,12 +766,19 @@ knnMENSUB14 <- cbind.data.frame(preds.knn.tr.MENSUB14,realknnMENSUB14)
 knnMENSUB14 <- knnMENSUB14 %>% mutate(MENSUBknndiff = ((preds.knn.tr.MENSUB14 - realknnMENSUB14)/realknnMENSUB14))
 knnMENSUB14.mse <- mean((preds.knn.tr.MENSUB14 - realknnMENSUB14)^2)
 knnMENSUB14.mse
+
+MENSUB <- cbind(MENSUB14,knnMENSUB14)
+MENSUBreal <- MENSUB$realMENSUB14
+MENSUBtreediff <- MENSUB$MENSUBtreediff
+MENSUBknndiff <- MENSUB$MENSUBknndiff
 ```
 
 
 \newpage
 
 *DIAB: Diabetes, urogenital, blood, and endocrine diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -624,7 +791,13 @@ preds.tr.DIAB14 <- predict(tr.DIAB14$finalModel, newdata = countyratesfullcases)
 realDIAB14 <- countyratesfullcases$DIAB.DIAB14
 DIAB14 <- cbind.data.frame(preds.tr.DIAB14,realDIAB14)
 DIAB14 <- DIAB14 %>% mutate(DIABtreediff = ((preds.tr.DIAB14 - realDIAB14)/realDIAB14))
+treeDIAB14.mse <- mean((preds.tr.DIAB14 - realDIAB14)^2)
+treeDIAB14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -638,12 +811,19 @@ knnDIAB14 <- cbind.data.frame(preds.knn.tr.DIAB14,realknnDIAB14)
 knnDIAB14 <- knnDIAB14 %>% mutate(DIABknndiff = ((preds.knn.tr.DIAB14 - realknnDIAB14)/realknnDIAB14))
 knnDIAB14.mse <- mean((preds.knn.tr.DIAB14 - realknnDIAB14)^2)
 knnDIAB14.mse
+
+DIAB <- cbind(DIAB14,knnDIAB14)
+DIABreal <- DIAB$realDIAB14
+DIABtreediff <- DIAB$DIABtreediff
+DIABknndiff <- DIAB$DIABknndiff
 ```
 
 
 \newpage
 
 *MUSC: Musculoskeletal disorders*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -656,7 +836,13 @@ preds.tr.MUSC14 <- predict(tr.MUSC14$finalModel, newdata = countyratesfullcases)
 realMUSC14 <- countyratesfullcases$MUSC.MUSC14
 MUSC14 <- cbind.data.frame(preds.tr.MUSC14,realMUSC14)
 MUSC14 <- MUSC14 %>% mutate(MUSCtreediff = ((preds.tr.MUSC14 - realMUSC14)/realMUSC14))
+treeMUSC14.mse <- mean((preds.tr.MUSC14 - realMUSC14)^2)
+treeMUSC14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -670,12 +856,19 @@ knnMUSC14 <- cbind.data.frame(preds.knn.tr.MUSC14,realknnMUSC14)
 knnMUSC14 <- knnMUSC14 %>% mutate(MUSCknndiff = ((preds.knn.tr.MUSC14 - realknnMUSC14)/realknnMUSC14))
 knnMUSC14.mse <- mean((preds.knn.tr.MUSC14 - realknnMUSC14)^2)
 knnMUSC14.mse
+
+MUSC <- cbind(MUSC14,knnMUSC14)
+MUSCreal <- MUSC$realMUSC14
+MUSCtreediff <- MUSC$MUSCtreediff
+MUSCknndiff <- MUSC$MUSCknndiff
 ```
 
 
 \newpage
 
 *OTHN: Other non-communicable diseases*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -688,7 +881,13 @@ preds.tr.OTHN14 <- predict(tr.OTHN14$finalModel, newdata = countyratesfullcases)
 realOTHN14 <- countyratesfullcases$OTHN.OTHN14
 OTHN14 <- cbind.data.frame(preds.tr.OTHN14,realOTHN14)
 OTHN14 <- OTHN14 %>% mutate(OTHNtreediff = ((preds.tr.OTHN14 - realOTHN14)/realOTHN14))
+treeOTHN14.mse <- mean((preds.tr.OTHN14 - realOTHN14)^2)
+treeOTHN14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -702,12 +901,19 @@ knnOTHN14 <- cbind.data.frame(preds.knn.tr.OTHN14,realknnOTHN14)
 knnOTHN14 <- knnOTHN14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
 knnOTHN14.mse <- mean((preds.knn.tr.OTHN14 - realknnOTHN14)^2)
 knnOTHN14.mse
+
+OTHN <- cbind(OTHN14,knnOTHN14)
+OTHNreal <- OTHN$realOTHN14
+OTHNtreediff <- OTHN$OTHNtreediff
+OTHNknndiff <- OTHN$OTHNknndiff
 ```
 
 
 \newpage
 
 *TRAN: Transport injuries*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -720,7 +926,13 @@ preds.tr.TRAN14 <- predict(tr.TRAN14$finalModel, newdata = countyratesfullcases)
 realTRAN14 <- countyratesfullcases$TRAN.TRAN14
 TRAN14 <- cbind.data.frame(preds.tr.TRAN14,realTRAN14)
 TRAN14 <- TRAN14 %>% mutate(TRANtreediff = ((preds.tr.TRAN14 - realTRAN14)/realTRAN14))
+treeTRAN14.mse <- mean((preds.tr.TRAN14 - realTRAN14)^2)
+treeTRAN14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -734,12 +946,19 @@ knnTRAN14 <- cbind.data.frame(preds.knn.tr.TRAN14,realknnTRAN14)
 knnTRAN14 <- knnTRAN14 %>% mutate(TRANknndiff = ((preds.knn.tr.TRAN14 - realknnTRAN14)/realknnTRAN14))
 knnTRAN14.mse <- mean((preds.knn.tr.TRAN14 - realknnTRAN14)^2)
 knnTRAN14.mse
+
+TRAN <- cbind(TRAN14,knnTRAN14)
+TRANreal <- TRAN$realTRAN14
+TRANtreediff <- TRAN$TRANtreediff
+TRANknndiff <- TRAN$TRANknndiff
 ```
 
 
 \newpage
 
 *UNIN: Unintentional injuries*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -752,7 +971,13 @@ preds.tr.UNIN14 <- predict(tr.UNIN14$finalModel, newdata = countyratesfullcases)
 realUNIN14 <- countyratesfullcases$UNIN.UNIN14
 UNIN14 <- cbind.data.frame(preds.tr.UNIN14,realUNIN14)
 UNIN14 <- UNIN14 %>% mutate(UNINtreediff = ((preds.tr.UNIN14 - realUNIN14)/realUNIN14))
+treeUNIN14.mse <- mean((preds.tr.UNIN14 - realUNIN14)^2)
+treeUNIN14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -766,12 +991,19 @@ knnUNIN14 <- cbind.data.frame(preds.knn.tr.UNIN14,realknnUNIN14)
 knnUNIN14 <- knnUNIN14 %>% mutate(UNINknndiff = ((preds.knn.tr.UNIN14 - realknnUNIN14)/realknnUNIN14))
 knnUNIN14.mse <- mean((preds.knn.tr.UNIN14 - realknnUNIN14)^2)
 knnUNIN14.mse
+
+UNIN <- cbind(UNIN14,knnUNIN14)
+UNINreal <- UNIN$realUNIN14
+UNINtreediff <- UNIN$UNINtreediff
+UNINknndiff <- UNIN$UNINknndiff
 ```
 
 
 \newpage
 
 *SELF: Self-harm and interpersonal violence*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -784,7 +1016,13 @@ preds.tr.SELF14 <- predict(tr.SELF14$finalModel, newdata = countyratesfullcases)
 realSELF14 <- countyratesfullcases$SELF.SELF14
 SELF14 <- cbind.data.frame(preds.tr.SELF14,realSELF14)
 SELF14 <- SELF14 %>% mutate(SELFtreediff = ((preds.tr.SELF14 - realSELF14)/realSELF14))
+treeSELF14.mse <- mean((preds.tr.SELF14 - realSELF14)^2)
+treeSELF14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -798,12 +1036,19 @@ knnSELF14 <- cbind.data.frame(preds.knn.tr.SELF14,realknnSELF14)
 knnSELF14 <- knnSELF14 %>% mutate(SELFknndiff = ((preds.knn.tr.SELF14 - realknnSELF14)/realknnSELF14))
 knnSELF14.mse <- mean((preds.knn.tr.SELF14 - realknnSELF14)^2)
 knnSELF14.mse
+
+SELF <- cbind(SELF14,knnSELF14)
+SELFreal <- SELF$realSELF14
+SELFtreediff <- SELF$SELFtreediff
+SELFknndiff <- SELF$SELFknndiff
 ```
 
 
 \newpage
 
 *WAR: Forces of nature, war, and legal intervention*
+
+Regression tree and mean square error
 
 
 ```{r echo=FALSE}
@@ -816,7 +1061,13 @@ preds.tr.WAR14 <- predict(tr.WAR14$finalModel, newdata = countyratesfullcases)
 realWAR14 <- countyratesfullcases$WAR.WAR14
 WAR14 <- cbind.data.frame(preds.tr.WAR14,realWAR14)
 WAR14 <- WAR14 %>% mutate(WARtreediff = ((preds.tr.WAR14 - realWAR14)/realWAR14))
+treeWAR14.mse <- mean((preds.tr.WAR14 - realWAR14)^2)
+treeWAR14.mse
 ```
+
+
+k-Nearest Neighbors mean square error
+
 
 ```{r echo=FALSE}
 set.seed(4747)
@@ -830,6 +1081,11 @@ knnWAR14 <- cbind.data.frame(preds.knn.tr.WAR14,realknnWAR14)
 knnWAR14 <- knnWAR14 %>% mutate(WARknndiff = ((preds.knn.tr.WAR14 - realknnWAR14)/realknnWAR14))
 knnWAR14.mse <- mean((preds.knn.tr.WAR14 - realknnWAR14)^2)
 knnWAR14.mse
+
+WAR <- cbind(WAR14,knnWAR14)
+WARreal <- WAR$realWAR14
+WARtreediff <- WAR$WARtreediff
+WARknndiff <- WAR$WARknndiff
 ```
 
 
@@ -841,26 +1097,26 @@ fips <- countyratesfullcases$fips
 latitude <- countyratesfullcases$latitude
 longitude <- countyratesfullcases$longitude
 results  <- cbind.data.frame(fips,latitude,longitude,
-      HIV14$realHIV14,HIV14$HIVtreediff,knnHIV14$HIVknndiff,
-      INF14$realINF14,INF14$INFtreediff,knnINF14$INFknndiff,
-      TROP14$realTROP14,TROP14$TROPtreediff,knnTROP14$TROPknndiff,
-      MAT14$realMAT14,MAT14$MATtreediff,knnMAT14$MATknndiff,
-      NEON14$realNEON14,NEON14$NEONtreediff,knnNEON14$NEONknndiff,
-      NUT14$realNUT14,NUT14$NUTtreediff,knnNUT14$NUTknndiff,
-      OTHC14$realOTHC14,OTHC14$OTHCtreediff,knnOTHC14$OTHCknndiff,
-      NEOP14$realNEOP14,NEOP14$NEOPtreediff,knnNEOP14$NEOPknndiff,
-      CHRON14$realCHRON14,CHRON14$CHRONtreediff,knnCHRON14$CHRONknndiff,
-      CIRR14$realCIRR14,CIRR14$CIRRtreediff,knnCIRR14$CIRRknndiff,
-      DIG14$realDIG14,DIG14$DIGtreediff,knnDIG14$DIGknndiff,
-      NEUR14$realNEUR14,NEUR14$NEURtreediff,knnNEUR14$NEURknndiff,
-      MENSUB14$realMENSUB14,MENSUB14$MENSUBtreediff,knnMENSUB14$MENSUBknndiff,
-      DIAB14$realDIAB14,DIAB14$DIABtreediff,knnDIAB14$DIABknndiff,
-      MUSC14$realMUSC14,MUSC14$MUSCtreediff,knnMUSC14$MUSCknndiff,
-      OTHN14$realOTHN14,OTHN14$OTHNtreediff,knnOTHN14$OTHNknndiff,
-      TRAN14$realTRAN14,TRAN14$TRANtreediff,knnTRAN14$TRANknndiff,
-      UNIN14$realUNIN14,UNIN14$UNINtreediff,knnUNIN14$UNINknndiff,
-      SELF14$realSELF14,SELF14$SELFtreediff,knnSELF14$SELFknndiff,
-      WAR14$realWAR14,WAR14$WARtreediff,knnWAR14$WARknndiff)
+      HIVreal,HIVtreediff,HIVknndiff,
+      INFreal,INFtreediff,INFknndiff,
+      TROPreal,TROPtreediff,TROPknndiff,
+      MATreal,MATtreediff,MATknndiff,
+      NEONreal,NEONtreediff,NEONknndiff,
+      NUTreal,NUTtreediff,NUTknndiff,
+      OTHCreal,OTHCtreediff,OTHCknndiff,
+      NEOPreal,NEOPtreediff,NEOPknndiff,
+      CHRONreal,CHRONtreediff,CHRONknndiff,
+      CIRRreal,CIRRtreediff,CIRRknndiff,
+      DIGreal,DIGtreediff,DIGknndiff,
+      NEURreal,NEURtreediff,NEURknndiff,
+      MENSUBreal,MENSUBtreediff,MENSUBknndiff,
+      DIABreal,DIABtreediff,DIABknndiff,
+      MUSCreal,MUSCtreediff,MUSCknndiff,
+      OTHNreal,OTHNtreediff,OTHNknndiff,
+      TRANreal,TRANtreediff,TRANknndiff,
+      UNINreal,UNINtreediff,UNINknndiff,
+      SELFreal,SELFtreediff,SELFknndiff,
+      WARreal,WARtreediff,WARknndiff)
 View(results)
 
 ```
