@@ -4,7 +4,7 @@ output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=60),tidy=TRUE)
 ```
 
 
@@ -33,20 +33,7 @@ The first step of data wrangling with this dataset was selecting the variables w
 ```{r}
 require(dplyr)
 load("USA_county_data.RData")
-countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,
-                                         dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,
-                                         dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,
-                                         At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,
-                                         White.not.Latino.Population,African.American.Population,Native.American.Population,
-                                         Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,
-                                         Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,
-                                         Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,
-                                         Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,
-                                         Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,
-                                         Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,
-                                         Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,
-                                         Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,
-Uninsured,Unemployment)
+countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,Uninsured,Unemployment)
 
 countydata <- countydata %>% filter(!fips %in% seq(0,100000, by=1000)) %>% arrange(fips)
 ```
@@ -97,7 +84,7 @@ SELF: Self-harm and interpersonal violence
 WAR: Forces of nature, war, and legal intervention
 
 This dataset was an Excel file with estimates with estimated mortality rates for each county for each of 20 causes of mortality for each of many years (1980, 1985, 1990, 1995, 2000, 2005, 2010, and 2014). The first thing we had to do was change each estimate from a midpoint and a confidence interval to just the midpoint. We also renamed the sheets and columns to make them easier to work with.
-Then, because each cause of death was its own sheet, we had to make a function to read in each sheet.
+Then, because each cause of death was its own sheet, we had to make a function to read in all of the sheets to one dataframe in RStudio.
 
 ```{r}
 library(readxl)
@@ -118,30 +105,7 @@ Because each cause of death was its own sheet, when we imported the data there w
 require(dplyr)
 mortalityrates <- rename(mortalityrates, fips = HIV.FIPS)
 mortalityrates <- rename(mortalityrates, location = HIV.Location)
-mortalityrates <- mortalityrates %>% select(location,fips,HIV.HIV80,HIV.HIV85,HIV.HIV90,
-                                            HIV.HIV95,HIV.HIV00,HIV.HIV05,HIV.HIV10,HIV.HIV14,INF.INF80,INF.INF85,INF.INF90,INF.INF95,
-                                            INF.INF00,INF.INF05,INF.INF10,INF.INF14,TROP.TROP80,TROP.TROP85,TROP.TROP90,TROP.TROP95,
-                                            TROP.TROP00,TROP.TROP05,TROP.TROP10,TROP.TROP14,MAT.MAT80,MAT.MAT85,MAT.MAT90,MAT.MAT95,
-                                            MAT.MAT00,MAT.MAT05,MAT.MAT10,MAT.MAT14,NEON.NEON80,NEON.NEON85,NEON.NEON90,NEON.NEON95,
-                                            NEON.NEON00,NEON.NEON05,NEON.NEON10,NEON.NEON14,NUT.NUT80,NUT.NUT85,NUT.NUT90,NUT.NUT95,
-                                            NUT.NUT00,NUT.NUT05,NUT.NUT10,NUT.NUT14,OTHC.OTHC80,OTHC.OTHC85,OTHC.OTHC90,OTHC.OTHC95,
-                                            OTHC.OTHC00,OTHC.OTHC05,OTHC.OTHC10,OTHC.OTHC14,NEOP.NEOP80,NEOP.NEOP85,NEOP.NEOP90,
-                                            NEOP.NEOP95,NEOP.NEOP00,NEOP.NEOP05,NEOP.NEOP10,NEOP.NEOP14,CHRON.CHRON80,CHRON.CHRON85,
-                                            CHRON.CHRON90,CHRON.CHRON95,CHRON.CHRON00,CHRON.CHRON05,CHRON.CHRON10,CHRON.CHRON14,
-                                            CIRR.CIRR80,CIRR.CIRR85,CIRR.CIRR90,CIRR.CIRR95,CIRR.CIRR00,CIRR.CIRR05,CIRR.CIRR10,
-                                            CIRR.CIRR14,DIG.DIG80,DIG.DIG85,DIG.DIG90,DIG.DIG95,DIG.DIG00,DIG.DIG05,DIG.DIG10,
-                                            DIG.DIG14,NEUR.NEUR80,NEUR.NEUR85,NEUR.NEUR90,NEUR.NEUR95,NEUR.NEUR00,NEUR.NEUR05,NEUR.NEUR10,
-                                            NEUR.NEUR14,MENSUB.MENSUB80,MENSUB.MENSUB85,MENSUB.MENSUB90,MENSUB.MENSUB95,MENSUB.MENSUB00,
-                                            MENSUB.MENSUB05,MENSUB.MENSUB10,MENSUB.MENSUB14,DIAB.DIAB80,DIAB.DIAB85,DIAB.DIAB90,
-                                            DIAB.DIAB95,DIAB.DIAB00,DIAB.DIAB05,DIAB.DIAB10,DIAB.DIAB14,MUSC.MUSC80,MUSC.MUSC85,
-                                            MUSC.MUSC90,MUSC.MUSC95,MUSC.MUSC00,MUSC.MUSC05,MUSC.MUSC10,MUSC.MUSC14,OTHN.OTHN80,
-                                            OTHN.OTHN85,OTHN.OTHN90,OTHN.OTHN95,OTHN.OTHN00,OTHN.OTHN05,OTHN.OTHN10,OTHN.OTHN14,
-                                            TRAN.TRAN80,TRAN.TRAN85,TRAN.TRAN90,TRAN.TRAN95,TRAN.TRAN00,TRAN.TRAN05,TRAN.TRAN10,
-                                            TRAN.TRAN14,UNIN.UNIN80,UNIN.UNIN85,UNIN.UNIN90,UNIN.UNIN95,UNIN.UNIN00,UNIN.UNIN05,
-                                            UNIN.UNIN10,UNIN.UNIN14,SELF.SELF80,SELF.SELF85,SELF.SELF90,SELF.SELF95,SELF.SELF00,
-                                            SELF.SELF05,SELF.SELF10,SELF.SELF14,WAR.WAR80,WAR.WAR85,WAR.WAR90,WAR.WAR95,WAR.WAR00,
-
-WAR.WAR05,WAR.WAR10,WAR.WAR14)
+mortalityrates <- mortalityrates %>% select(location,fips,HIV.HIV80,HIV.HIV85,HIV.HIV90,HIV.HIV95,HIV.HIV00,HIV.HIV05,HIV.HIV10,HIV.HIV14,INF.INF80,INF.INF85,INF.INF90,INF.INF95,INF.INF00,INF.INF05,INF.INF10,INF.INF14,TROP.TROP80,TROP.TROP85,TROP.TROP90,TROP.TROP95,TROP.TROP00,TROP.TROP05,TROP.TROP10,TROP.TROP14,MAT.MAT80,MAT.MAT85,MAT.MAT90,MAT.MAT95,MAT.MAT00,MAT.MAT05,MAT.MAT10,MAT.MAT14,NEON.NEON80,NEON.NEON85,NEON.NEON90,NEON.NEON95,NEON.NEON00,NEON.NEON05,NEON.NEON10,NEON.NEON14,NUT.NUT80,NUT.NUT85,NUT.NUT90,NUT.NUT95,NUT.NUT00,NUT.NUT05,NUT.NUT10,NUT.NUT14,OTHC.OTHC80,OTHC.OTHC85,OTHC.OTHC90,OTHC.OTHC95,OTHC.OTHC00,OTHC.OTHC05,OTHC.OTHC10,OTHC.OTHC14,NEOP.NEOP80,NEOP.NEOP85,NEOP.NEOP90,NEOP.NEOP95,NEOP.NEOP00,NEOP.NEOP05,NEOP.NEOP10,NEOP.NEOP14,CHRON.CHRON80,CHRON.CHRON85,CHRON.CHRON90,CHRON.CHRON95,CHRON.CHRON00,CHRON.CHRON05,CHRON.CHRON10,CHRON.CHRON14,CIRR.CIRR80,CIRR.CIRR85,CIRR.CIRR90,CIRR.CIRR95,CIRR.CIRR00,CIRR.CIRR05,CIRR.CIRR10,CIRR.CIRR14,DIG.DIG80,DIG.DIG85,DIG.DIG90,DIG.DIG95,DIG.DIG00,DIG.DIG05,DIG.DIG10,DIG.DIG14,NEUR.NEUR80,NEUR.NEUR85,NEUR.NEUR90,NEUR.NEUR95,NEUR.NEUR00,NEUR.NEUR05,NEUR.NEUR10,NEUR.NEUR14,MENSUB.MENSUB80,MENSUB.MENSUB85,MENSUB.MENSUB90,MENSUB.MENSUB95,MENSUB.MENSUB00,MENSUB.MENSUB05,MENSUB.MENSUB10,MENSUB.MENSUB14,DIAB.DIAB80,DIAB.DIAB85,DIAB.DIAB90,DIAB.DIAB95,DIAB.DIAB00,DIAB.DIAB05,DIAB.DIAB10,DIAB.DIAB14,MUSC.MUSC80,MUSC.MUSC85,MUSC.MUSC90,MUSC.MUSC95,MUSC.MUSC00,MUSC.MUSC05,MUSC.MUSC10,MUSC.MUSC14,OTHN.OTHN80,OTHN.OTHN85,OTHN.OTHN90,OTHN.OTHN95,OTHN.OTHN00,OTHN.OTHN05,OTHN.OTHN10,OTHN.OTHN14,TRAN.TRAN80,TRAN.TRAN85,TRAN.TRAN90,TRAN.TRAN95,TRAN.TRAN00,TRAN.TRAN05,TRAN.TRAN10,TRAN.TRAN14,UNIN.UNIN80,UNIN.UNIN85,UNIN.UNIN90,UNIN.UNIN95,UNIN.UNIN00,UNIN.UNIN05,UNIN.UNIN10,UNIN.UNIN14,SELF.SELF80,SELF.SELF85,SELF.SELF90,SELF.SELF95,SELF.SELF00,SELF.SELF05,SELF.SELF10,SELF.SELF14,WAR.WAR80,WAR.WAR85,WAR.WAR90,WAR.WAR95,WAR.WAR00,WAR.WAR05,WAR.WAR10,WAR.WAR14)
 ```
 
 Similar to with the other dataset, there were state rows as well as county rows. However, in this dataset the states had low FIPS codes (below 100) instead of FIPS codes of multiples of 1000. Additionally, the mortality rates dataset had counties in Puerto Rico (FIPS codes in the 72000s), but we removed these because they did not have data in the Deleetdk data.
@@ -161,9 +125,7 @@ countyrates <- inner_join(countydata,mortalityrates,by=c("fips"))
 After combining the datasets, we noticed there were several observations with missing data for some variables. In particular, all of Alaska was missing most of the Deleetdk data and a few stray observations were missing the education data and a number of other variables. We removed those observations.
 
 ```{r}
-countyratesnogaps <- countyrates %>% filter(fips>100) %>% filter(fips<70000) 
-%>% filter(!is.na(rep16_frac)) %>% filter(!is.na(At.Least.High.School.Diploma))  
-%>% arrange(fips)
+countyratesnogaps <- countyrates %>% filter(fips>100) %>% filter(fips<70000) %>% filter(!is.na(rep16_frac)) %>% filter(!is.na(At.Least.High.School.Diploma))  %>% arrange(fips)
 ```
 
 We also chose to remove some of the variables that had a lot of missing data by selecting the others.
