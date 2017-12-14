@@ -21,16 +21,17 @@ shinyUI(fluidPage(
     
     selectInput("var",
                 
-                label = "Choose Cause of Death",
+                label = "Choose Cause of Death and Model",
                 
-                choices = list("HIV", "Maternal Disorders", "Common Infectious Diseases",
-                               "Neglected Tropical Diseases", "Neonatal Disorders", "OTHC", 
-                               "Neoplasms"),
+                choices = list("HIV Actual", "HIV Tree", "HIV kNN", "Maternal Disorders Actual", "Common Infectious Diseases Actual",
+                               "Neglected Tropical Diseases Actual", "Neonatal Disorders Actual", "OTHC Actual", 
+                               "Neoplasms Actual"),
                 
-                selected = "HIV"),
+                selected = "HIV Actual"),
     ),
+        
   
-  mainPanel(plotOutput("map"))
+  mainPanel(plotOutput("map"), width = 12)
   
   )
 )

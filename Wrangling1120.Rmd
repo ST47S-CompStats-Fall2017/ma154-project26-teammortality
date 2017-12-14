@@ -128,7 +128,7 @@ countyrates <- inner_join(countydata,mortalityrates,by=c("fips"))
 
 ```{r}
 require(dplyr)
-`2015_Gaz_counties_national` <- read.delim("~/Desktop/CompStats/Project/ma154-project26-teammortality/2015_Gaz_counties_national.txt")
+`2015_Gaz_counties_national` <- read.delim("2015_Gaz_counties_national.txt")
 `2015_Gaz_counties_national` <- rename(`2015_Gaz_counties_national`, fips = GEOID)
 `2015_Gaz_counties_national` <- rename(`2015_Gaz_counties_national`, latitude = INTPTLAT)
 `2015_Gaz_counties_national` <- rename(`2015_Gaz_counties_national`, longitude = INTPTLONG)
