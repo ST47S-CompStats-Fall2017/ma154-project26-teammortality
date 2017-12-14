@@ -84,18 +84,19 @@ require(rpart.plot)
 library(tree)
 ```
 
+HIV: HIV-AIDS and Tuberculosis
+
 ```{r trees}
 set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
-tr.HIV14
 tr.HIV14$finalModel
 rpart.plot(tr.HIV14$finalModel)
 preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
 realHIV14 <- countyratesfullcases$HIV.HIV14
 HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
-HIV14 <- HIV14 %>% mutate(diff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
 ```
 
 ```{r}
@@ -104,9 +105,425 @@ fitControl <- trainControl(method="none")
 knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
                 data=countyratesfullcases, method="knn", trControl = fitControl, 
                  tuneGrid= data.frame(k=5))
-knn.tr.HIV14
 preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
 realknnHIV14 <- countyratesfullcases$HIV.HIV14
 knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
-knnHIV14 <- knnHIV14 %>% mutate(diff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+INF: Diarrhea, lower respiratory, and other common infectious diseases
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.INF14 <- train(INF.INF14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.INF14$finalModel
+rpart.plot(tr.INF14$finalModel)
+preds.tr.INF14 <- predict(tr.INF14$finalModel, newdata = countyratesfullcases)
+realINF14 <- countyratesfullcases$INF.INF14
+INF14 <- cbind.data.frame(preds.tr.INF14,realINF14)
+INF14 <- INF14 %>% mutate(INFtreediff = ((preds.tr.INF14 - realINF14)/realINF14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.INF14 <- train(INF.INF14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.INF14 <- predict(knn.tr.INF14, newdata = countyratesfullcases)
+realknnINF14 <- countyratesfullcases$INF.INF14
+knnINF14 <- cbind.data.frame(preds.knn.tr.INF14,realknnINF14)
+knnINF14 <- knnINF14 %>% mutate(INFknndiff = ((preds.knn.tr.INF14 - realknnINF14)/realknnINF14))
+```
+
+
+TROP: Neglected tropical diseases and malaria
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.TROP14 <- train(TROP.TROP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.TROP14$finalModel
+rpart.plot(tr.TROP14$finalModel)
+preds.tr.TROP14 <- predict(tr.TROP14$finalModel, newdata = countyratesfullcases)
+realTROP14 <- countyratesfullcases$TROP.TROP14
+TROP14 <- cbind.data.frame(preds.tr.TROP14,realTROP14)
+TROP14 <- TROP14 %>% mutate(TROPtreediff = ((preds.tr.TROP14 - realTROP14)/realTROP14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.TROP14 <- train(TROP.TROP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.TROP14 <- predict(knn.tr.TROP14, newdata = countyratesfullcases)
+realknnTROP14 <- countyratesfullcases$TROP.TROP14
+knnTROP14 <- cbind.data.frame(preds.knn.tr.TROP14,realknnTROP14)
+knnTROP14 <- knnTROP14 %>% mutate(TROPknndiff = ((preds.knn.tr.TROP14 - realknnTROP14)/realknnTROP14))
+```
+
+
+MAT: Maternal disorders
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.MAT14 <- train(MAT.MAT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.MAT14$finalModel
+rpart.plot(tr.MAT14$finalModel)
+preds.tr.MAT14 <- predict(tr.MAT14$finalModel, newdata = countyratesfullcases)
+realMAT14 <- countyratesfullcases$MAT.MAT14
+MAT14 <- cbind.data.frame(preds.tr.MAT14,realMAT14)
+MAT14 <- MAT14 %>% mutate(MATtreediff = ((preds.tr.MAT14 - realMAT14)/realMAT14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.MAT14 <- train(MAT.MAT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.MAT14 <- predict(knn.tr.MAT14, newdata = countyratesfullcases)
+realknnMAT14 <- countyratesfullcases$MAT.MAT14
+knnMAT14 <- cbind.data.frame(preds.knn.tr.MAT14,realknnMAT14)
+knnMAT14 <- knnMAT14 %>% mutate(MATknndiff = ((preds.knn.tr.MAT14 - realknnMAT14)/realknnMAT14))
+```
+
+
+NEON: Neonatal disorders
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.NEON14 <- train(NEON.NEON14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.NEON14$finalModel
+rpart.plot(tr.NEON14$finalModel)
+preds.tr.NEON14 <- predict(tr.NEON14$finalModel, newdata = countyratesfullcases)
+realNEON14 <- countyratesfullcases$NEON.NEON14
+NEON14 <- cbind.data.frame(preds.tr.NEON14,realNEON14)
+NEON14 <- NEON14 %>% mutate(NEONtreediff = ((preds.tr.NEON14 - realNEON14)/realNEON14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.NEON14 <- train(NEON.NEON14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.NEON14 <- predict(knn.tr.NEON14, newdata = countyratesfullcases)
+realknnNEON14 <- countyratesfullcases$NEON.NEON14
+knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
+knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
+```
+
+
+NUT: Nutritional deficiencies
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.NUT14 <- train(NUT.NUT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.NUT14$finalModel
+rpart.plot(tr.NUT14$finalModel)
+preds.tr.NUT14 <- predict(tr.NUT14$finalModel, newdata = countyratesfullcases)
+realNUT14 <- countyratesfullcases$NUT.NUT14
+NUT14 <- cbind.data.frame(preds.tr.NUT14,realNUT14)
+NUT14 <- NUT14 %>% mutate(NUTtreediff = ((preds.tr.NUT14 - realNUT14)/realNUT14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.NUT14 <- train(NUT.NUT14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.NUT14 <- predict(knn.tr.NUT14, newdata = countyratesfullcases)
+realknnNUT14 <- countyratesfullcases$NUT.NUT14
+knnNUT14 <- cbind.data.frame(preds.knn.tr.NUT14,realknnNUT14)
+knnNUT14 <- knnHIV14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
+```
+
+
+OTHC: Other communicable, maternal, neonatal, and nutritional diseases
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.OTHC14 <- train(OTHC.OTHC14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.OTHC14$finalModel
+rpart.plot(tr.OTHC14$finalModel)
+preds.tr.OTHC14 <- predict(tr.OTHC14$finalModel, newdata = countyratesfullcases)
+realOTHC14 <- countyratesfullcases$OTHC.OTHC14
+OTHC14 <- cbind.data.frame(preds.tr.OTHC14,realOTHC14)
+OTHC14 <- OTHC14 %>% mutate(OTHCtreediff = ((preds.tr.OTHC14 - realOTHC14)/realOTHC14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.OTHC14 <- train(OTHC.OTHC14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.OTHC14 <- predict(knn.tr.OTHC14, newdata = countyratesfullcases)
+realknnOTHC14 <- countyratesfullcases$OTHC.OTHC14
+knnOTHC14 <- cbind.data.frame(preds.knn.tr.OTHC14,realknnOTHC14)
+knnOTHC14 <- knnOTHC14 %>% mutate(OTHCknndiff = ((preds.knn.tr.OTHC14 - realknnOTHC14)/realknnOTHC14))
+```
+
+
+NEOP: Neoplasms
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.NEOP14 <- train(NEOP.NEOP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.NEOP14$finalModel
+rpart.plot(tr.NEOP14$finalModel)
+preds.tr.NEOP14 <- predict(tr.NEOP14$finalModel, newdata = countyratesfullcases)
+realNEOP14 <- countyratesfullcases$NEOP.NEOP14
+NEOP14 <- cbind.data.frame(preds.tr.NEOP14,realNEOP14)
+NEOP14 <- NEOP14 %>% mutate(NEOPtreediff = ((preds.tr.NEOP14 - realNEOP14)/realNEOP14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.NEOP14 <- train(NEOP.NEOP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.NEOP14 <- predict(knn.tr.NEOP14, newdata = countyratesfullcases)
+realknnNEOP14 <- countyratesfullcases$NEOP.NEOP14
+knnNEOP14 <- cbind.data.frame(preds.knn.tr.NEOP14,realknnNEOP14)
+knnNEOP14 <- knnNEOP14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
+```
+
+
+```{r}
+fips <- countyratesfullcases$fips
+results  <- cbind.data.frame(fips,HIV14$realHIV14,HIV14$HIVtreediff,knnHIV14$HIVknndiff,INF14$realINF14,INF14$INFtreediff,knnINF14$INFknndiff,TROP14$realTROP14,TROP14$TROPtreediff,knnTROP14$TROPknndiff,MAT14$realMAT14,MAT14$MATtreediff,knnMAT14$MATknndiff,NEON14$realNEON14,NEON14$NEONtreediff,knnNEON14$NEONknndiff,NUT14$realNUT14,NUT14$NUTtreediff,knnNUT14$NUTknndiff,OTHC14$realOTHC14,OTHC14$OTHCtreediff,knnOTHC14$OTHCknndiff,NEOP14$realNEOP14,NEOP14$NEOPtreediff,knnNEOP14$NEOPknndiff)
+View(results)
+
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+```
+
+
+```{r trees}
+set.seed(1)
+fitControl <- trainControl(method="cv")
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+                  trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+tr.HIV14$finalModel
+rpart.plot(tr.HIV14$finalModel)
+preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
+realHIV14 <- countyratesfullcases$HIV.HIV14
+HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
+HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
+```
+
+```{r}
+set.seed(4747)
+fitControl <- trainControl(method="none")
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+                data=countyratesfullcases, method="knn", trControl = fitControl, 
+                 tuneGrid= data.frame(k=5))
+preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
+realknnHIV14 <- countyratesfullcases$HIV.HIV14
+knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
+knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
 ```
