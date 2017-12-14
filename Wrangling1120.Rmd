@@ -15,6 +15,9 @@ knitr::opts_chunk$set(echo = TRUE)
 **Motivation/Purpose**
 
 
+**Background**
+
+\newpage
 
 **Data Sources**
 
@@ -27,10 +30,24 @@ Finally, the county-level electoral data comes from the [failing New York Times]
 
 The first step of data wrangling with this dataset was selecting the variables we wanted from it. We then removed the state-level rows, which all have FIPS codes of X000, so that the data was only counties.
 
-```{r echo=FALSE}
+```{r}
 require(dplyr)
 load("USA_county_data.RData")
-countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,White.not.Latino.Population,African.American.Population,Native.American.Population,Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,Uninsured,Unemployment)
+countydata <- USA_county_data %>% select(fips,name_16,rep16_frac,dem16_frac,rep16_frac2,
+                                         dem16_frac2,statecode_prev,rep12_frac,dem12_frac,rep12_frac2,dem12_frac2,rep08_frac,
+                                         dem08_frac,rep08_frac2,dem08_frac2,Less.Than.High.School,At.Least.High.School.Diploma,
+                                         At.Least.Bachelor.s.Degree,Graduate.Degree,School.Enrollment,Median.Earnings.2010.dollars,
+                                         White.not.Latino.Population,African.American.Population,Native.American.Population,
+                                         Asian.American.Population,Latino.Population,Children.Under.6.Living.in.Poverty,
+                                         Adults.65.and.Older.Living.in.Poverty,Total.Population,Preschool.Enrollment.Ratio.enrolled.ages.3.and.4,
+                                         Poverty.Rate.below.federal.poverty.threshold,Child.Poverty.living.in.families.below.the.poverty.line,
+                                         Management.professional.and.related.occupations,Service.occupations,Sales.and.office.occupations,
+                                         Farming.fishing.and.forestry.occupations,Construction.extraction.maintenance.and.repair.occupations,
+                                         Production.transportation.and.material.moving.occupations,State,median_age,Poor.physical.health.days,
+                                         Poor.mental.health.days,Low.birthweight,Teen.births,Children.in.single.parent.households,
+                                         Adult.smoking,Adult.obesity,Diabetes,Sexually.transmitted.infections,HIV.prevalence.rate,
+Uninsured,Unemployment)
+
 countydata <- countydata %>% filter(!fips %in% seq(0,100000, by=1000)) %>% arrange(fips)
 ```
  
@@ -40,24 +57,43 @@ The key dataset for this analysis is a set of estimates of “annual mortality r
 The causes of death (and our short names for them) are:
 
 HIV: HIV-AIDS and Tuberculosis
+
 INF: Diarrhea, lower respiratory, and other common infectious diseases
+
 TROP: Neglected tropical diseases and malaria
+
 MAT: Maternal disorders
+
 NEON: Neonatal disorders
+
 NUT: Nutritional deficiencies
+
 OTHC: Other communicable, maternal, neonatal, and nutritional diseases
+
 NEOP: Neoplasms
+
 CHRON: Chronic respiratory diseases
+
 CIRR: Cirrhosis and other chronic liver diseases
+
 DIG: Digestive diseases
+
 NEUR: Neurological disorders
+
 MENSUB: Mental and substance use disorders
+
 DIAB: Diabetes, urogenital, blood, and endocrine diseases
+
 MUSC: Musculoskeletal disorders
+
 OTHN: Other non-communicable diseases
+
 TRAN: Transport injuries
+
 UNIN: Unintentional injuries
+
 SELF: Self-harm and interpersonal violence
+
 WAR: Forces of nature, war, and legal intervention
 
 This dataset was an Excel file with estimates with estimated mortality rates for each county for each of 20 causes of mortality for each of many years (1980, 1985, 1990, 1995, 2000, 2005, 2010, and 2014). The first thing we had to do was change each estimate from a midpoint and a confidence interval to just the midpoint. We also renamed the sheets and columns to make them easier to work with.
@@ -78,11 +114,34 @@ mortalityrates <- as.data.frame(mortalityrates)
 
 Because each cause of death was its own sheet, when we imported the data there were 20 columns of the FIPS codes and 20 columns of location (the county names). As a result, we selected one of the location and FIPS and all of the mortality rate estimates to keep.
 
-```{r echo=FALSE}
+```{r}
 require(dplyr)
 mortalityrates <- rename(mortalityrates, fips = HIV.FIPS)
 mortalityrates <- rename(mortalityrates, location = HIV.Location)
-mortalityrates <- mortalityrates %>% select(location,fips,HIV.HIV80,HIV.HIV85,HIV.HIV90,HIV.HIV95,HIV.HIV00,HIV.HIV05,HIV.HIV10,HIV.HIV14,INF.INF80,INF.INF85,INF.INF90,INF.INF95,INF.INF00,INF.INF05,INF.INF10,INF.INF14,TROP.TROP80,TROP.TROP85,TROP.TROP90,TROP.TROP95,TROP.TROP00,TROP.TROP05,TROP.TROP10,TROP.TROP14,MAT.MAT80,MAT.MAT85,MAT.MAT90,MAT.MAT95,MAT.MAT00,MAT.MAT05,MAT.MAT10,MAT.MAT14,NEON.NEON80,NEON.NEON85,NEON.NEON90,NEON.NEON95,NEON.NEON00,NEON.NEON05,NEON.NEON10,NEON.NEON14,NUT.NUT80,NUT.NUT85,NUT.NUT90,NUT.NUT95,NUT.NUT00,NUT.NUT05,NUT.NUT10,NUT.NUT14,OTHC.OTHC80,OTHC.OTHC85,OTHC.OTHC90,OTHC.OTHC95,OTHC.OTHC00,OTHC.OTHC05,OTHC.OTHC10,OTHC.OTHC14,NEOP.NEOP80,NEOP.NEOP85,NEOP.NEOP90,NEOP.NEOP95,NEOP.NEOP00,NEOP.NEOP05,NEOP.NEOP10,NEOP.NEOP14,CHRON.CHRON80,CHRON.CHRON85,CHRON.CHRON90,CHRON.CHRON95,CHRON.CHRON00,CHRON.CHRON05,CHRON.CHRON10,CHRON.CHRON14,CIRR.CIRR80,CIRR.CIRR85,CIRR.CIRR90,CIRR.CIRR95,CIRR.CIRR00,CIRR.CIRR05,CIRR.CIRR10,CIRR.CIRR14,DIG.DIG80,DIG.DIG85,DIG.DIG90,DIG.DIG95,DIG.DIG00,DIG.DIG05,DIG.DIG10,DIG.DIG14,NEUR.NEUR80,NEUR.NEUR85,NEUR.NEUR90,NEUR.NEUR95,NEUR.NEUR00,NEUR.NEUR05,NEUR.NEUR10,NEUR.NEUR14,MENSUB.MENSUB80,MENSUB.MENSUB85,MENSUB.MENSUB90,MENSUB.MENSUB95,MENSUB.MENSUB00,MENSUB.MENSUB05,MENSUB.MENSUB10,MENSUB.MENSUB14,DIAB.DIAB80,DIAB.DIAB85,DIAB.DIAB90,DIAB.DIAB95,DIAB.DIAB00,DIAB.DIAB05,DIAB.DIAB10,DIAB.DIAB14,MUSC.MUSC80,MUSC.MUSC85,MUSC.MUSC90,MUSC.MUSC95,MUSC.MUSC00,MUSC.MUSC05,MUSC.MUSC10,MUSC.MUSC14,OTHN.OTHN80,OTHN.OTHN85,OTHN.OTHN90,OTHN.OTHN95,OTHN.OTHN00,OTHN.OTHN05,OTHN.OTHN10,OTHN.OTHN14,TRAN.TRAN80,TRAN.TRAN85,TRAN.TRAN90,TRAN.TRAN95,TRAN.TRAN00,TRAN.TRAN05,TRAN.TRAN10,TRAN.TRAN14,UNIN.UNIN80,UNIN.UNIN85,UNIN.UNIN90,UNIN.UNIN95,UNIN.UNIN00,UNIN.UNIN05,UNIN.UNIN10,UNIN.UNIN14,SELF.SELF80,SELF.SELF85,SELF.SELF90,SELF.SELF95,SELF.SELF00,SELF.SELF05,SELF.SELF10,SELF.SELF14,WAR.WAR80,WAR.WAR85,WAR.WAR90,WAR.WAR95,WAR.WAR00,WAR.WAR05,WAR.WAR10,WAR.WAR14)
+mortalityrates <- mortalityrates %>% select(location,fips,HIV.HIV80,HIV.HIV85,HIV.HIV90,
+                                            HIV.HIV95,HIV.HIV00,HIV.HIV05,HIV.HIV10,HIV.HIV14,INF.INF80,INF.INF85,INF.INF90,INF.INF95,
+                                            INF.INF00,INF.INF05,INF.INF10,INF.INF14,TROP.TROP80,TROP.TROP85,TROP.TROP90,TROP.TROP95,
+                                            TROP.TROP00,TROP.TROP05,TROP.TROP10,TROP.TROP14,MAT.MAT80,MAT.MAT85,MAT.MAT90,MAT.MAT95,
+                                            MAT.MAT00,MAT.MAT05,MAT.MAT10,MAT.MAT14,NEON.NEON80,NEON.NEON85,NEON.NEON90,NEON.NEON95,
+                                            NEON.NEON00,NEON.NEON05,NEON.NEON10,NEON.NEON14,NUT.NUT80,NUT.NUT85,NUT.NUT90,NUT.NUT95,
+                                            NUT.NUT00,NUT.NUT05,NUT.NUT10,NUT.NUT14,OTHC.OTHC80,OTHC.OTHC85,OTHC.OTHC90,OTHC.OTHC95,
+                                            OTHC.OTHC00,OTHC.OTHC05,OTHC.OTHC10,OTHC.OTHC14,NEOP.NEOP80,NEOP.NEOP85,NEOP.NEOP90,
+                                            NEOP.NEOP95,NEOP.NEOP00,NEOP.NEOP05,NEOP.NEOP10,NEOP.NEOP14,CHRON.CHRON80,CHRON.CHRON85,
+                                            CHRON.CHRON90,CHRON.CHRON95,CHRON.CHRON00,CHRON.CHRON05,CHRON.CHRON10,CHRON.CHRON14,
+                                            CIRR.CIRR80,CIRR.CIRR85,CIRR.CIRR90,CIRR.CIRR95,CIRR.CIRR00,CIRR.CIRR05,CIRR.CIRR10,
+                                            CIRR.CIRR14,DIG.DIG80,DIG.DIG85,DIG.DIG90,DIG.DIG95,DIG.DIG00,DIG.DIG05,DIG.DIG10,
+                                            DIG.DIG14,NEUR.NEUR80,NEUR.NEUR85,NEUR.NEUR90,NEUR.NEUR95,NEUR.NEUR00,NEUR.NEUR05,NEUR.NEUR10,
+                                            NEUR.NEUR14,MENSUB.MENSUB80,MENSUB.MENSUB85,MENSUB.MENSUB90,MENSUB.MENSUB95,MENSUB.MENSUB00,
+                                            MENSUB.MENSUB05,MENSUB.MENSUB10,MENSUB.MENSUB14,DIAB.DIAB80,DIAB.DIAB85,DIAB.DIAB90,
+                                            DIAB.DIAB95,DIAB.DIAB00,DIAB.DIAB05,DIAB.DIAB10,DIAB.DIAB14,MUSC.MUSC80,MUSC.MUSC85,
+                                            MUSC.MUSC90,MUSC.MUSC95,MUSC.MUSC00,MUSC.MUSC05,MUSC.MUSC10,MUSC.MUSC14,OTHN.OTHN80,
+                                            OTHN.OTHN85,OTHN.OTHN90,OTHN.OTHN95,OTHN.OTHN00,OTHN.OTHN05,OTHN.OTHN10,OTHN.OTHN14,
+                                            TRAN.TRAN80,TRAN.TRAN85,TRAN.TRAN90,TRAN.TRAN95,TRAN.TRAN00,TRAN.TRAN05,TRAN.TRAN10,
+                                            TRAN.TRAN14,UNIN.UNIN80,UNIN.UNIN85,UNIN.UNIN90,UNIN.UNIN95,UNIN.UNIN00,UNIN.UNIN05,
+                                            UNIN.UNIN10,UNIN.UNIN14,SELF.SELF80,SELF.SELF85,SELF.SELF90,SELF.SELF95,SELF.SELF00,
+                                            SELF.SELF05,SELF.SELF10,SELF.SELF14,WAR.WAR80,WAR.WAR85,WAR.WAR90,WAR.WAR95,WAR.WAR00,
+
+WAR.WAR05,WAR.WAR10,WAR.WAR14)
 ```
 
 Similar to with the other dataset, there were state rows as well as county rows. However, in this dataset the states had low FIPS codes (below 100) instead of FIPS codes of multiples of 1000. Additionally, the mortality rates dataset had counties in Puerto Rico (FIPS codes in the 72000s), but we removed these because they did not have data in the Deleetdk data.
@@ -102,7 +161,9 @@ countyrates <- inner_join(countydata,mortalityrates,by=c("fips"))
 After combining the datasets, we noticed there were several observations with missing data for some variables. In particular, all of Alaska was missing most of the Deleetdk data and a few stray observations were missing the education data and a number of other variables. We removed those observations.
 
 ```{r}
-countyratesnogaps <- countyrates %>% filter(fips>100) %>% filter(fips<70000) %>% filter(!is.na(rep16_frac)) %>% filter(!is.na(At.Least.High.School.Diploma))  %>% arrange(fips)
+countyratesnogaps <- countyrates %>% filter(fips>100) %>% filter(fips<70000) 
+%>% filter(!is.na(rep16_frac)) %>% filter(!is.na(At.Least.High.School.Diploma))  
+%>% arrange(fips)
 ```
 
 We also chose to remove some of the variables that had a lot of missing data by selecting the others.
@@ -118,6 +179,8 @@ countyratesfullcases <- countyratesnogaps[complete.cases(countyratesnogaps),]
 ```
 
 
+\newpage
+
 **Model Creation/Statistical Computation**
 
 We created two models for each of the twenty causes of death - a regression tree and a k nearest neighbors model.
@@ -130,12 +193,26 @@ require(rpart.plot)
 library(tree)
 ```
 
-HIV: HIV-AIDS and Tuberculosis
 
-```{r echo=FALSE}
+To give a sense for our model-building process, we have included the R code for the model creation for the cause of death, HIV-AIDS and tuberculosis. All of the other models follow the same format, and only the regression trees and the mean square errors from the k-nearest neighbors model are shown for them.
+
+*HIV: HIV-AIDS and Tuberculosis*
+
+Regression tree
+
+```{r}
 set.seed(1)
 fitControl <- trainControl(method="cv")
-tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
+tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School 
++ At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree 
++ School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population 
++ African.American.Population + Native.American.Population + 
+  Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty 
++ Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + 
+Management.professional.and.related.occupations + Service.occupations + 
+Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + 
+Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + 
+Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
 rpart.plot(tr.HIV14$finalModel)
 preds.tr.HIV14 <- predict(tr.HIV14$finalModel, newdata = countyratesfullcases)
@@ -144,20 +221,38 @@ HIV14 <- cbind.data.frame(preds.tr.HIV14,realHIV14)
 HIV14 <- HIV14 %>% mutate(HIVtreediff = ((preds.tr.HIV14 - realHIV14)/realHIV14))
 ```
 
-```{r echo=FALSE}
+
+k-Nearest Neighbors
+
+
+```{r}
 set.seed(4747)
 fitControl <- trainControl(method="none")
-knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, 
+knn.tr.HIV14 <- train(HIV.HIV14 ~ rep16_frac + dem16_frac + Less.Than.High.School 
++ At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree 
++ School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population 
++ African.American.Population + Native.American.Population + 
+  Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty 
++ Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + 
+Management.professional.and.related.occupations + Service.occupations + 
+Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + 
+Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + 
+Unemployment, 
                 data=countyratesfullcases, method="knn", trControl = fitControl, 
                  tuneGrid= data.frame(k=5))
 preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
 realknnHIV14 <- countyratesfullcases$HIV.HIV14
 knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
 knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
+knnHIV14.mse <- mean((preds.knn.tr.HIV14 - realknnHIV14)^2)
+knnHIV14.mse
 ```
 
 
-INF: Diarrhea, lower respiratory, and other common infectious diseases
+\newpage
+
+*INF: Diarrhea, lower respiratory, and other common infectious diseases*
+
 
 ```{r echo=FALSE}
 set.seed(1)
@@ -181,10 +276,14 @@ preds.knn.tr.INF14 <- predict(knn.tr.INF14, newdata = countyratesfullcases)
 realknnINF14 <- countyratesfullcases$INF.INF14
 knnINF14 <- cbind.data.frame(preds.knn.tr.INF14,realknnINF14)
 knnINF14 <- knnINF14 %>% mutate(INFknndiff = ((preds.knn.tr.INF14 - realknnINF14)/realknnINF14))
+knnINF14.mse <- mean((preds.knn.tr.INF14 - realknnINF14)^2)
+knnINF14.mse
 ```
 
 
-TROP: Neglected tropical diseases and malaria
+\newpage
+
+*TROP: Neglected tropical diseases and malaria*
 
 
 ```{r echo=FALSE}
@@ -209,10 +308,15 @@ preds.knn.tr.TROP14 <- predict(knn.tr.TROP14, newdata = countyratesfullcases)
 realknnTROP14 <- countyratesfullcases$TROP.TROP14
 knnTROP14 <- cbind.data.frame(preds.knn.tr.TROP14,realknnTROP14)
 knnTROP14 <- knnTROP14 %>% mutate(TROPknndiff = ((preds.knn.tr.TROP14 - realknnTROP14)/realknnTROP14))
+knnTROP14.mse <- mean((preds.knn.tr.TROP14 - realknnTROP14)^2)
+knnTROP14.mse
 ```
 
 
-MAT: Maternal disorders
+\newpage
+
+*MAT: Maternal disorders*
+
 
 ```{r echo=FALSE}
 set.seed(1)
@@ -236,10 +340,14 @@ preds.knn.tr.MAT14 <- predict(knn.tr.MAT14, newdata = countyratesfullcases)
 realknnMAT14 <- countyratesfullcases$MAT.MAT14
 knnMAT14 <- cbind.data.frame(preds.knn.tr.MAT14,realknnMAT14)
 knnMAT14 <- knnMAT14 %>% mutate(MATknndiff = ((preds.knn.tr.MAT14 - realknnMAT14)/realknnMAT14))
+knnMAT14.mse <- mean((preds.knn.tr.MAT14 - realknnMAT14)^2)
+knnMAT14.mse
 ```
 
 
-NEON: Neonatal disorders
+\newpage
+
+*NEON: Neonatal disorders*
 
 
 ```{r echo=FALSE}
@@ -264,10 +372,14 @@ preds.knn.tr.NEON14 <- predict(knn.tr.NEON14, newdata = countyratesfullcases)
 realknnNEON14 <- countyratesfullcases$NEON.NEON14
 knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
 knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
+knnNEON14.mse <- mean((preds.knn.tr.NEON14 - realknnNEON14)^2)
+knnNEON14.mse
 ```
 
 
-NUT: Nutritional deficiencies
+\newpage
+
+*NUT: Nutritional deficiencies*
 
 
 ```{r echo=FALSE}
@@ -292,10 +404,14 @@ preds.knn.tr.NUT14 <- predict(knn.tr.NUT14, newdata = countyratesfullcases)
 realknnNUT14 <- countyratesfullcases$NUT.NUT14
 knnNUT14 <- cbind.data.frame(preds.knn.tr.NUT14,realknnNUT14)
 knnNUT14 <- knnHIV14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
+knnNUT14.mse <- mean((preds.knn.tr.NUT14 - realknnNUT14)^2)
+knnNUT14.mse
 ```
 
 
-OTHC: Other communicable, maternal, neonatal, and nutritional diseases
+\newpage
+
+*OTHC: Other communicable, maternal, neonatal, and nutritional diseases*
 
 
 ```{r echo=FALSE}
@@ -320,10 +436,14 @@ preds.knn.tr.OTHC14 <- predict(knn.tr.OTHC14, newdata = countyratesfullcases)
 realknnOTHC14 <- countyratesfullcases$OTHC.OTHC14
 knnOTHC14 <- cbind.data.frame(preds.knn.tr.OTHC14,realknnOTHC14)
 knnOTHC14 <- knnOTHC14 %>% mutate(OTHCknndiff = ((preds.knn.tr.OTHC14 - realknnOTHC14)/realknnOTHC14))
+knnOTHC14.mse <- mean((preds.knn.tr.OTHC14 - realknnOTHC14)^2)
+knnOTHC14.mse
 ```
 
 
-NEOP: Neoplasms
+\newpage
+
+*NEOP: Neoplasms*
 
 
 ```{r echo=FALSE}
@@ -348,9 +468,14 @@ preds.knn.tr.NEOP14 <- predict(knn.tr.NEOP14, newdata = countyratesfullcases)
 realknnNEOP14 <- countyratesfullcases$NEOP.NEOP14
 knnNEOP14 <- cbind.data.frame(preds.knn.tr.NEOP14,realknnNEOP14)
 knnNEOP14 <- knnNEOP14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
+knnNEOP14.mse <- mean((preds.knn.tr.NEOP14 - realknnNEOP14)^2)
+knnNEOP14.mse
 ```
 
-CHRON: Chronic respiratory diseases
+
+\newpage
+
+*CHRON: Chronic respiratory diseases*
 
 
 ```{r echo=FALSE}
@@ -375,10 +500,14 @@ preds.knn.tr.CHRON14 <- predict(knn.tr.CHRON14, newdata = countyratesfullcases)
 realknnCHRON14 <- countyratesfullcases$CHRON.CHRON14
 knnCHRON14 <- cbind.data.frame(preds.knn.tr.CHRON14,realknnCHRON14)
 knnCHRON14 <- knnCHRON14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
+knnCHRON14.mse <- mean((preds.knn.tr.CHRON14 - realknnCHRON14)^2)
+knnCHRON14.mse
 ```
 
 
-CIRR: Cirrhosis and other chronic liver diseases
+\newpage
+
+*CIRR: Cirrhosis and other chronic liver diseases*
 
 
 ```{r echo=FALSE}
@@ -403,10 +532,14 @@ preds.knn.tr.CIRR14 <- predict(knn.tr.CIRR14, newdata = countyratesfullcases)
 realknnCIRR14 <- countyratesfullcases$CIRR.CIRR14
 knnCIRR14 <- cbind.data.frame(preds.knn.tr.CIRR14,realknnCIRR14)
 knnCIRR14 <- knnCIRR14 %>% mutate(CIRRknndiff = ((preds.knn.tr.CIRR14 - realknnCIRR14)/realknnCIRR14))
+knnCIRR14.mse <- mean((preds.knn.tr.CIRR14 - realknnCIRR14)^2)
+knnCIRR14.mse
 ```
 
 
-DIG: Digestive diseases
+\newpage
+
+*DIG: Digestive diseases*
 
 
 ```{r echo=FALSE}
@@ -431,10 +564,14 @@ preds.knn.tr.DIG14 <- predict(knn.tr.DIG14, newdata = countyratesfullcases)
 realknnDIG14 <- countyratesfullcases$DIG.DIG14
 knnDIG14 <- cbind.data.frame(preds.knn.tr.DIG14,realknnDIG14)
 knnDIG14 <- knnDIG14 %>% mutate(DIGknndiff = ((preds.knn.tr.DIG14 - realknnDIG14)/realknnDIG14))
+knnDIG14.mse <- mean((preds.knn.tr.DIG14 - realknnDIG14)^2)
+knnDIG14.mse
 ```
 
 
-NEUR: Neurological disorders
+\newpage
+
+*NEUR: Neurological disorders*
 
 
 ```{r echo=FALSE}
@@ -459,10 +596,14 @@ preds.knn.tr.NEUR14 <- predict(knn.tr.NEUR14, newdata = countyratesfullcases)
 realknnNEUR14 <- countyratesfullcases$NEUR.NEUR14
 knnNEUR14 <- cbind.data.frame(preds.knn.tr.NEUR14,realknnNEUR14)
 knnNEUR14 <- knnNEUR14 %>% mutate(NEURknndiff = ((preds.knn.tr.NEUR14 - realknnNEUR14)/realknnNEUR14))
+knnNEUR14.mse <- mean((preds.knn.tr.NEUR14 - realknnNEUR14)^2)
+knnNEUR14.mse
 ```
 
 
-MENSUB: Mental and substance use disorders
+\newpage
+
+*MENSUB: Mental and substance use disorders*
 
 
 ```{r echo=FALSE}
@@ -487,10 +628,14 @@ preds.knn.tr.MENSUB14 <- predict(knn.tr.MENSUB14, newdata = countyratesfullcases
 realknnMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
 knnMENSUB14 <- cbind.data.frame(preds.knn.tr.MENSUB14,realknnMENSUB14)
 knnMENSUB14 <- knnMENSUB14 %>% mutate(MENSUBknndiff = ((preds.knn.tr.MENSUB14 - realknnMENSUB14)/realknnMENSUB14))
+knnMENSUB14.mse <- mean((preds.knn.tr.MENSUB14 - realknnMENSUB14)^2)
+knnMENSUB14.mse
 ```
 
 
-DIAB: Diabetes, urogenital, blood, and endocrine diseases
+\newpage
+
+*DIAB: Diabetes, urogenital, blood, and endocrine diseases*
 
 
 ```{r echo=FALSE}
@@ -515,10 +660,14 @@ preds.knn.tr.DIAB14 <- predict(knn.tr.DIAB14, newdata = countyratesfullcases)
 realknnDIAB14 <- countyratesfullcases$DIAB.DIAB14
 knnDIAB14 <- cbind.data.frame(preds.knn.tr.DIAB14,realknnDIAB14)
 knnDIAB14 <- knnDIAB14 %>% mutate(DIABknndiff = ((preds.knn.tr.DIAB14 - realknnDIAB14)/realknnDIAB14))
+knnDIAB14.mse <- mean((preds.knn.tr.DIAB14 - realknnDIAB14)^2)
+knnDIAB14.mse
 ```
 
 
-MUSC: Musculoskeletal disorders
+\newpage
+
+*MUSC: Musculoskeletal disorders*
 
 
 ```{r echo=FALSE}
@@ -543,10 +692,14 @@ preds.knn.tr.MUSC14 <- predict(knn.tr.MUSC14, newdata = countyratesfullcases)
 realknnMUSC14 <- countyratesfullcases$MUSC.MUSC14
 knnMUSC14 <- cbind.data.frame(preds.knn.tr.MUSC14,realknnMUSC14)
 knnMUSC14 <- knnMUSC14 %>% mutate(MUSCknndiff = ((preds.knn.tr.MUSC14 - realknnMUSC14)/realknnMUSC14))
+knnMUSC14.mse <- mean((preds.knn.tr.MUSC14 - realknnMUSC14)^2)
+knnMUSC14.mse
 ```
 
 
-OTHN: Other non-communicable diseases
+\newpage
+
+*OTHN: Other non-communicable diseases*
 
 
 ```{r echo=FALSE}
@@ -571,10 +724,14 @@ preds.knn.tr.OTHN14 <- predict(knn.tr.OTHN14, newdata = countyratesfullcases)
 realknnOTHN14 <- countyratesfullcases$OTHN.OTHN14
 knnOTHN14 <- cbind.data.frame(preds.knn.tr.OTHN14,realknnOTHN14)
 knnOTHN14 <- knnOTHN14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
+knnOTHN14.mse <- mean((preds.knn.tr.OTHN14 - realknnOTHN14)^2)
+knnOTHN14.mse
 ```
 
 
-TRAN: Transport injuries
+\newpage
+
+*TRAN: Transport injuries*
 
 
 ```{r echo=FALSE}
@@ -599,10 +756,14 @@ preds.knn.tr.TRAN14 <- predict(knn.tr.TRAN14, newdata = countyratesfullcases)
 realknnTRAN14 <- countyratesfullcases$TRAN.TRAN14
 knnTRAN14 <- cbind.data.frame(preds.knn.tr.TRAN14,realknnTRAN14)
 knnTRAN14 <- knnTRAN14 %>% mutate(TRANknndiff = ((preds.knn.tr.TRAN14 - realknnTRAN14)/realknnTRAN14))
+knnTRAN14.mse <- mean((preds.knn.tr.TRAN14 - realknnTRAN14)^2)
+knnTRAN14.mse
 ```
 
 
-UNIN: Unintentional injuries
+\newpage
+
+*UNIN: Unintentional injuries*
 
 
 ```{r echo=FALSE}
@@ -627,10 +788,14 @@ preds.knn.tr.UNIN14 <- predict(knn.tr.UNIN14, newdata = countyratesfullcases)
 realknnUNIN14 <- countyratesfullcases$UNIN.UNIN14
 knnUNIN14 <- cbind.data.frame(preds.knn.tr.UNIN14,realknnUNIN14)
 knnUNIN14 <- knnUNIN14 %>% mutate(UNINknndiff = ((preds.knn.tr.UNIN14 - realknnUNIN14)/realknnUNIN14))
+knnUNIN14.mse <- mean((preds.knn.tr.UNIN14 - realknnUNIN14)^2)
+knnUNIN14.mse
 ```
 
 
-SELF: Self-harm and interpersonal violence
+\newpage
+
+*SELF: Self-harm and interpersonal violence*
 
 
 ```{r echo=FALSE}
@@ -655,10 +820,14 @@ preds.knn.tr.SELF14 <- predict(knn.tr.SELF14, newdata = countyratesfullcases)
 realknnSELF14 <- countyratesfullcases$SELF.SELF14
 knnSELF14 <- cbind.data.frame(preds.knn.tr.SELF14,realknnSELF14)
 knnSELF14 <- knnSELF14 %>% mutate(SELFknndiff = ((preds.knn.tr.SELF14 - realknnSELF14)/realknnSELF14))
+knnSELF14.mse <- mean((preds.knn.tr.SELF14 - realknnSELF14)^2)
+knnSELF14.mse
 ```
 
 
-WAR: Forces of nature, war, and legal intervention
+\newpage
+
+*WAR: Forces of nature, war, and legal intervention*
 
 
 ```{r echo=FALSE}
@@ -683,6 +852,8 @@ preds.knn.tr.WAR14 <- predict(knn.tr.WAR14, newdata = countyratesfullcases)
 realknnWAR14 <- countyratesfullcases$WAR.WAR14
 knnWAR14 <- cbind.data.frame(preds.knn.tr.WAR14,realknnWAR14)
 knnWAR14 <- knnWAR14 %>% mutate(WARknndiff = ((preds.knn.tr.WAR14 - realknnWAR14)/realknnWAR14))
+knnWAR14.mse <- mean((preds.knn.tr.WAR14 - realknnWAR14)^2)
+knnWAR14.mse
 ```
 
 ```{r echo =FALSE}
@@ -711,3 +882,10 @@ results  <- cbind.data.frame(fips,
 View(results)
 
 ```
+
+
+**Shiny Visualization**
+
+
+**Limitations**
+
