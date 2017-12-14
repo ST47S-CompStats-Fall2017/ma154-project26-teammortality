@@ -8,41 +8,13 @@
 #
 
 library(shiny)
-percent_map <- function(var, color, legend.title, min = 0, max = 100) {
-  
-  # generate vector of fill colors for map
-  shades <- colorRampPalette(c("white", color))(100)
-  
-  # constrain gradient to percents that occur between min and max
-  var <- pmax(var, min)
-  var <- pmin(var, max)
-  percents <- as.integer(cut(var, 100, 
-                             include.lowest = TRUE, ordered = TRUE))
-  fills <- shades[percents]
-  
-  # plot choropleth map
-  map("county", fill = TRUE, col = fills, 
-      resolution = 0, lty = 0, projection = "polyconic", 
-      myborder = 0, mar = c(0,0,0,0))
-  
-  # overlay state borders
-  map("state", col = "white", fill = FALSE, add = TRUE,
-      lty = 1, lwd = 1, projection = "polyconic", 
-      myborder = 0, mar = c(0,0,0,0))
-  
-  # add a legend
-  inc <- (max - min) / 4
-  legend.text <- c(paste0(min, " % or less"),
-                   paste0(min + inc, " %"),
-                   paste0(min + 2 * inc, " %"),
-                   paste0(min + 3 * inc, " %"),
-                   paste0(max, " % or more"))
-  
-  legend("bottomleft", 
-         legend = legend.text, 
-         fill = shades[c(1, 25, 50, 75, 100)], 
-         title = legend.title)
-}
+library(maps)
+library(ggplot2)
+library(fiftystater)
+library(leaflet)
+library(choroplethr)
+
+county <- map_data("county")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -50,17 +22,26 @@ shinyServer(function(input, output) {
   output$map <- renderPlot({
     
     data <- switch(input$var, 
-                   "HIV" <- results$`HIV14$HIVtreediff`,
-                   "Maternal Disorders" <- results$`MAT14$MATtreediff`,
-                   "Common Infectious Diseases" <- results$`INF14$INFtreediff`,
-                   "Neglected Tropical Diseases" <- results$`TROP14$TROPtreediff`,  
-                   "Neonatal Disorders" <- results$`NEON14$NEONtreediff`, 
-                   "OTHC" <- results$`OTHC14$OTHCtreediff`,
-                   "Neoplasms" <- results$`NEOP14$NEOPtreediff`)
+                   "HIV" = results$`HIV14$HIVtreediff`,
+                   "Maternal Disorders" = results$`MAT14$MATtreediff`,
+                   "Common Infectious Diseases" = results$`INF14$INFtreediff`,
+                   "Neglected Tropical Diseases" = results$`TROP14$TROPtreediff`,  
+                   "Neonatal Disorders" = results$`NEON14$NEONtreediff`, 
+                   "OTHC" = results$`OTHC14$OTHCtreediff`,
+                   "Neoplasms" = results$`NEOP14$NEOPtreediff`)
+    
+    #ggplot() +
+      #geom_map(data=county, map=county, aes(x=long, y=lat, map_id=region), col="white", fill="grey")
+      #geom_polygon(data = results, aes(x = long, y = lat, group = group, fill = var))
     
     
-    percent_map(results, "darkred", "USA", input$range[1], input$range[2])
+    county_choropleth(results)
+    choro = CountyChoropleth$new(df_pop_county)
+    choro$title = "Mortality Model Estimates"
+    choro$ggplot_scale = scale_fill_brewer(name="Mortality", palette=2, drop=FALSE)
+    choro$render()
     
+
   })
   
 })
