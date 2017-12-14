@@ -15,8 +15,10 @@ shinyUI(fluidPage(
   titlePanel("County Level Mortality"),
   
   sidebarLayout(
+    
     helpText("See how accurately our predictive models are able to predict 
              the mortality rate for a given cause of death."),
+    
     selectInput("var",
                 
                 label = "Choose Cause of Death",
