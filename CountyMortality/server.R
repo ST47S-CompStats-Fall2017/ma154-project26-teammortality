@@ -12,12 +12,12 @@ library(maps)
 library(ggplot2)
 library(dplyr)
 library(choroplethr)
-
+library(googlesheets)
 
 county <- map_data("county")
 
-
-
+#results <- read.csv("results.csv")
+                
 shinyServer(function(input, output) {
    
   output$map <- renderPlot({
