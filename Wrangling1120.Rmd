@@ -253,7 +253,7 @@ preds.knn.tr.HIV14 <- predict(knn.tr.HIV14, newdata = countyratesfullcases)
 realknnHIV14 <- countyratesfullcases$HIV.HIV14
 knnHIV14 <- cbind.data.frame(preds.knn.tr.HIV14,realknnHIV14)
 knnHIV14 <- knnHIV14 %>% mutate(HIVknndiff = ((preds.knn.tr.HIV14 - realknnHIV14)/realknnHIV14))
-mortrate <- HIV14$HIVtreediff
+mortrate <- knnHIV14$HIVknndiff
 cause <- rep("HIV", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -315,7 +315,7 @@ preds.knn.tr.INF14 <- predict(knn.tr.INF14, newdata = countyratesfullcases)
 realknnINF14 <- countyratesfullcases$INF.INF14
 knnINF14 <- cbind.data.frame(preds.knn.tr.INF14,realknnINF14)
 knnINF14 <- knnINF14 %>% mutate(INFknndiff = ((preds.knn.tr.INF14 - realknnINF14)/realknnINF14))
-mortrate <- INF14$INFtreediff
+mortrate <- knnINF14$INFknndiff
 cause <- rep("INF", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -377,7 +377,7 @@ preds.knn.tr.TROP14 <- predict(knn.tr.TROP14, newdata = countyratesfullcases)
 realknnTROP14 <- countyratesfullcases$TROP.TROP14
 knnTROP14 <- cbind.data.frame(preds.knn.tr.TROP14,realknnTROP14)
 knnTROP14 <- knnTROP14 %>% mutate(TROPknndiff = ((preds.knn.tr.TROP14 - realknnTROP14)/realknnTROP14))
-mortrate <- TROP14$TROPtreediff
+mortrate <- knnTROP14$TROPknndiff
 cause <- rep("TROP", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -440,7 +440,7 @@ preds.knn.tr.MAT14 <- predict(knn.tr.MAT14, newdata = countyratesfullcases)
 realknnMAT14 <- countyratesfullcases$MAT.MAT14
 knnMAT14 <- cbind.data.frame(preds.knn.tr.MAT14,realknnMAT14)
 knnMAT14 <- knnMAT14 %>% mutate(MATknndiff = ((preds.knn.tr.MAT14 - realknnMAT14)/realknnMAT14))
-mortrate <- MAT14$MATtreediff
+mortrate <- knnMAT14$MATknndiff
 cause <- rep("MAT", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -503,7 +503,7 @@ preds.knn.tr.NEON14 <- predict(knn.tr.NEON14, newdata = countyratesfullcases)
 realknnNEON14 <- countyratesfullcases$NEON.NEON14
 knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
 knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
-mortrate <- NEON14$NEONtreediff
+mortrate <- knnNEON14$NEONknndiff
 cause <- rep("NEON", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -566,7 +566,7 @@ preds.knn.tr.NUT14 <- predict(knn.tr.NUT14, newdata = countyratesfullcases)
 realknnNUT14 <- countyratesfullcases$NUT.NUT14
 knnNUT14 <- cbind.data.frame(preds.knn.tr.NUT14,realknnNUT14)
 knnNUT14 <- knnNUT14 %>% mutate(NUTknndiff = ((preds.knn.tr.NUT14 - realknnNUT14)/realknnNUT14))
-mortrate <- NUT14$NUTtreediff
+mortrate <- knnNUT14$NUTknndiff
 cause <- rep("NUT", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -628,7 +628,7 @@ preds.knn.tr.OTHC14 <- predict(knn.tr.OTHC14, newdata = countyratesfullcases)
 realknnOTHC14 <- countyratesfullcases$OTHC.OTHC14
 knnOTHC14 <- cbind.data.frame(preds.knn.tr.OTHC14,realknnOTHC14)
 knnOTHC14 <- knnOTHC14 %>% mutate(OTHCknndiff = ((preds.knn.tr.OTHC14 - realknnOTHC14)/realknnOTHC14))
-mortrate <- OTHC14$OTHCtreediff
+mortrate <- knnOTHC14$OTHCknndiff
 cause <- rep("OTHC", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -691,7 +691,7 @@ preds.knn.tr.NEOP14 <- predict(knn.tr.NEOP14, newdata = countyratesfullcases)
 realknnNEOP14 <- countyratesfullcases$NEOP.NEOP14
 knnNEOP14 <- cbind.data.frame(preds.knn.tr.NEOP14,realknnNEOP14)
 knnNEOP14 <- knnHIV14 %>% mutate(NEOPknndiff = ((preds.knn.tr.NEOP14 - realknnNEOP14)/realknnNEOP14))
-mortrate <- NEOP14$NEOPtreediff
+mortrate <- knnNEOP14$NEOPknndiff
 cause <- rep("NEOP", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -753,8 +753,8 @@ knn.tr.CHRON14 <- train(CHRON.CHRON14 ~ rep16_frac + dem16_frac + Less.Than.High
 preds.knn.tr.CHRON14 <- predict(knn.tr.CHRON14, newdata = countyratesfullcases)
 realknnCHRON14 <- countyratesfullcases$CHRON.CHRON14
 knnCHRON14 <- cbind.data.frame(preds.knn.tr.CHRON14,realknnCHRON14)
-knnCHRON14 <- knnHIV14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
-mortrate <- CHRON14$CHRONtreediff
+knnCHRON14 <- knnCHRON14 %>% mutate(CHRONknndiff = ((preds.knn.tr.CHRON14 - realknnCHRON14)/realknnCHRON14))
+mortrate <- knnCHRON14$CHRONknndiff
 cause <- rep("CHRON", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -817,7 +817,7 @@ preds.knn.tr.CIRR14 <- predict(knn.tr.CIRR14, newdata = countyratesfullcases)
 realknnCIRR14 <- countyratesfullcases$CIRR.CIRR14
 knnCIRR14 <- cbind.data.frame(preds.knn.tr.CIRR14,realknnCIRR14)
 knnCIRR14 <- knnCIRR14 %>% mutate(CIRRknndiff = ((preds.knn.tr.CIRR14 - realknnCIRR14)/realknnCIRR14))
-mortrate <- CIRR14$CIRRtreediff
+mortrate <- knnCIRR14$CIRRknndiff
 cause <- rep("CIRR", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -880,7 +880,7 @@ preds.knn.tr.DIG14 <- predict(knn.tr.DIG14, newdata = countyratesfullcases)
 realknnDIG14 <- countyratesfullcases$DIG.DIG14
 knnDIG14 <- cbind.data.frame(preds.knn.tr.DIG14,realknnDIG14)
 knnDIG14 <- knnDIG14 %>% mutate(DIGknndiff = ((preds.knn.tr.DIG14 - realknnDIG14)/realknnDIG14))
-mortrate <- DIG14$DIGtreediff
+mortrate <- knnDIG14$DIGknndiff
 cause <- rep("DIG", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -943,7 +943,7 @@ preds.knn.tr.NEUR14 <- predict(knn.tr.NEUR14, newdata = countyratesfullcases)
 realknnNEUR14 <- countyratesfullcases$NEUR.NEUR14
 knnNEUR14 <- cbind.data.frame(preds.knn.tr.NEUR14,realknnNEUR14)
 knnNEUR14 <- knnNEUR14 %>% mutate(NEURknndiff = ((preds.knn.tr.NEUR14 - realknnNEUR14)/realknnNEUR14))
-mortrate <- NEUR14$NEURtreediff
+mortrate <- knnNEUR14$NEURknndiff
 cause <- rep("NEUR", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1006,7 +1006,7 @@ preds.knn.tr.MENSUB14 <- predict(knn.tr.MENSUB14, newdata = countyratesfullcases
 realknnMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
 knnMENSUB14 <- cbind.data.frame(preds.knn.tr.MENSUB14,realknnMENSUB14)
 knnMENSUB14 <- knnHIV14 %>% mutate(MENSUBknndiff = ((preds.knn.tr.MENSUB14 - realknnMENSUB14)/realknnMENSUB14))
-mortrate <- MENSUB14$MENSUBtreediff
+mortrate <- knnMENSUB14$MENSUBknndiff
 cause <- rep("MENSUB", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1069,7 +1069,7 @@ preds.knn.tr.DIAB14 <- predict(knn.tr.DIAB14, newdata = countyratesfullcases)
 realknnDIAB14 <- countyratesfullcases$DIAB.DIAB14
 knnDIAB14 <- cbind.data.frame(preds.knn.tr.DIAB14,realknnDIAB14)
 knnDIAB14 <- knnDIAB14 %>% mutate(DIABknndiff = ((preds.knn.tr.DIAB14 - realknnDIAB14)/realknnDIAB14))
-mortrate <- DIAB14$DIABtreediff
+mortrate <- knnDIAB14$DIABknndiff
 cause <- rep("DIAB", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1132,7 +1132,7 @@ preds.knn.tr.MUSC14 <- predict(knn.tr.MUSC14, newdata = countyratesfullcases)
 realknnMUSC14 <- countyratesfullcases$MUSC.MUSC14
 knnMUSC14 <- cbind.data.frame(preds.knn.tr.MUSC14,realknnMUSC14)
 knnMUSC14 <- knnMUSC14 %>% mutate(MUSCknndiff = ((preds.knn.tr.MUSC14 - realknnMUSC14)/realknnMUSC14))
-mortrate <- MUSC14$MUSCtreediff
+mortrate <- knnMUSC14$MUSCknndiff
 cause <- rep("MUSC", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1194,8 +1194,8 @@ knn.tr.OTHN14 <- train(OTHN.OTHN14 ~ rep16_frac + dem16_frac + Less.Than.High.Sc
 preds.knn.tr.OTHN14 <- predict(knn.tr.OTHN14, newdata = countyratesfullcases)
 realknnOTHN14 <- countyratesfullcases$OTHN.OTHN14
 knnOTHN14 <- cbind.data.frame(preds.knn.tr.OTHN14,realknnOTHN14)
-knnOTHN14 <- knnHIV14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
-mortrate <- OTHN14$OTHNtreediff
+knnOTHN14 <- knnOTHN14 %>% mutate(OTHNknndiff = ((preds.knn.tr.OTHN14 - realknnOTHN14)/realknnOTHN14))
+mortrate <- knnOTHN14$OTHNknndiff
 cause <- rep("OTHN", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1258,7 +1258,7 @@ preds.knn.tr.TRAN14 <- predict(knn.tr.TRAN14, newdata = countyratesfullcases)
 realknnTRAN14 <- countyratesfullcases$TRAN.TRAN14
 knnTRAN14 <- cbind.data.frame(preds.knn.tr.TRAN14,realknnTRAN14)
 knnTRAN14 <- knnTRAN14 %>% mutate(TRANknndiff = ((preds.knn.tr.TRAN14 - realknnTRAN14)/realknnTRAN14))
-mortrate <- TRAN14$TRANtreediff
+mortrate <- knnTRAN14$TRANknndiff
 cause <- rep("TRAN", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1321,7 +1321,7 @@ preds.knn.tr.UNIN14 <- predict(knn.tr.UNIN14, newdata = countyratesfullcases)
 realknnUNIN14 <- countyratesfullcases$UNIN.UNIN14
 knnUNIN14 <- cbind.data.frame(preds.knn.tr.UNIN14,realknnUNIN14)
 knnUNIN14 <- knnUNIN14 %>% mutate(UNINknndiff = ((preds.knn.tr.UNIN14 - realknnUNIN14)/realknnUNIN14))
-mortrate <- UNIN14$UNINtreediff
+mortrate <- knnUNIN14$UNINknndiff
 cause <- rep("UNIN", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1384,7 +1384,7 @@ preds.knn.tr.SELF14 <- predict(knn.tr.SELF14, newdata = countyratesfullcases)
 realknnSELF14 <- countyratesfullcases$SELF.SELF14
 knnSELF14 <- cbind.data.frame(preds.knn.tr.SELF14,realknnSELF14)
 knnSELF14 <- knnSELF14 %>% mutate(SELFknndiff = ((preds.knn.tr.SELF14 - realknnSELF14)/realknnSELF14))
-mortrate <- SELF14$SELFtreediff
+mortrate <- knnSELF14$SELFknndiff
 cause <- rep("SELF", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
@@ -1447,7 +1447,7 @@ preds.knn.tr.WAR14 <- predict(knn.tr.WAR14, newdata = countyratesfullcases)
 realknnWAR14 <- countyratesfullcases$WAR.WAR14
 knnWAR14 <- cbind.data.frame(preds.knn.tr.WAR14,realknnWAR14)
 knnWAR14 <- knnWAR14 %>% mutate(WARknndiff = ((preds.knn.tr.WAR14 - realknnWAR14)/realknnWAR14))
-mortrate <- WAR14$WARtreediff
+mortrate <- knnWAR14$WARknndiff
 cause <- rep("WAR", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
