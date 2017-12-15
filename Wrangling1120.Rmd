@@ -1319,7 +1319,7 @@ realknnUNIN14 <- countyratesfullcases$UNIN.UNIN14
 knnUNIN14 <- cbind.data.frame(preds.knn.tr.UNIN14,realknnUNIN14)
 knnUNIN14 <- knnUNIN14 %>% mutate(UNINknndiff = ((preds.knn.tr.UNIN14 - realknnUNIN14)/realknnUNIN14))
 mortrate <- UNIN14$UNINtreediff
-cause <- rep("HIV", 3110)
+cause <- rep("UNIN", 3110)
 cause <- as.data.frame(cause)
 model <- rep("knn", 3110)
 model <- as.data.frame(model)

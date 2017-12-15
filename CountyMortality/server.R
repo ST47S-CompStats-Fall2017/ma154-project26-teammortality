@@ -22,31 +22,42 @@ shinyServer(function(input, output) {
    
   output$map <- renderPlot({
     
-    data <- switch(input$var, 
-                   "HIV Actual" = results$HIVreal,
-                   "HIV Tree" = results$HIVtreediff,
-                   "HIV kNN" = results$HIVknndiff,
-                   "Maternal Disorders Actual" = results$MATreal,
-                   "Common Infectious Diseases Actual" = results$INFreal,
-                   "Neglected Tropical Diseases Actual" = results$TROPreal,  
-                   "Neonatal Disorders Actual" = results$NEONreal, 
-                   "OTHC Actual" = results$OTHCreal,
-                   "Neoplasms Actual" = results$NEOPreal)
+    cause.of.death <- switch(input$var, 
+                   "HIV" = "HIV",
+                   "Maternal Disorders" = "MAT",
+                   "Common Infectious Diseases" = "INF",
+                   "Neglected Tropical Diseases" = "TROP",  
+                   "Neonatal Disorders" = "NEON", 
+                   "Nutrional Deficiencies" = "NUT",
+                   "Other Communicable, Maternal, Neonatal and Nutritional Diseases" == "OTHC",
+                   "Neoplasms" = "NEOP",
+                   "Chronic Respiratory Diseases" = "CHRON", 
+                   "Cirrhosis and Chronic Liver Diseases" = "CIRR",
+                   "Digestive Diseases" = "DIG", 
+                   "Neurological Disorders" = "NEUR",
+                   "Mental and Substance Use Disorders" = "MENSUB", 
+                   "Diabetes, Urogenital, Blood and Endocrine Diseases" = "DIAB", 
+                   "Musculoskeletal  Disorders" = "MUSC", 
+                   "Other Non-cummunicable Diseases" = "OTHN",
+                   "Transport Injuries" = "TRAN",
+                   "Unintentional Injuries" = "UNIN", 
+                   "Self-harm and Interpersonal Violence" = "SELF",
+                   "Forces of Nature, War, and Legal Intervention" = "WAR")
     
-    names <- switch(input$var,
-                    "HIV Actual" = "HIV Deaths per 10,000",
-                    "HIV Tree" =  "Regression Tree Model: HIV prediction errors",
-                    "HIV kNN" = "kNN Model: HIV prediction errors", 
-                    "Maternal Disorders Actual" = "Maternal Disorders Deaths per 10,000",
-                    "Common Infectious Diseases Actual" = "Common Infectious Disease Deaths per 10,000",
-                    "Neglected Tropical Diseases Actual" = "Neglected Tropical Disease Deaths per 10,000",  
-                    "Neonatal Disorders Actual" = "Neonatal Disorder Deaths per 10,000", 
-                    "OTHC Actual" = "Other Communicable, Maternal, Neonatal, and Nutritional Disease Deaths per 10,000",
-                    "Neoplasms Actual" = "Neoplasm Deaths per 10,000")
+   model.choice <- switch(input$model,
+                   "Actual Mortality Rates" = "real", 
+                   "Regression Tree Estimates" = "tree", 
+                   "kNN Estimates" = "knn")
     
-    results.to.use <- results %>% mutate(region = fips, value = data * -1)
+    #name.apped <- switch(input$var2,
+     #               "Actual Mortality Rates" = "Deaths per 10,000",
+      #              "Regression Tree Estimates" =  "Regression Tree Model: prediction errors",
+       #             "kNN Estimates" = "kNN Model: prediction errors") 
     
-    county_choropleth(results.to.use, title = names, num_colors = 1)
+    results.to.use <- results %>% filter(model == model.choice) %>% filter(cause == cause.of.death) %>% 
+                              mutate(region = fips) %>% mutate(value = mortrate)
+    
+    county_choropleth(results.to.use, title = "Yay", num_colors = 1)
     
     
 
