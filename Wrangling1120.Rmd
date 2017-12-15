@@ -497,7 +497,7 @@ knn.tr.NEON14 <- train(NEON.NEON14 ~ rep16_frac + dem16_frac + Less.Than.High.Sc
                 data=countyratesfullcases, method="knn", trControl = fitControl, 
                  tuneGrid= data.frame(k=5))
 preds.knn.tr.NEON14 <- predict(knn.tr.NEON14, newdata = countyratesfullcases)
-realknnHNEON14 <- countyratesfullcases$NEON.NEON14
+realknnNEON14 <- countyratesfullcases$NEON.NEON14
 knnNEON14 <- cbind.data.frame(preds.knn.tr.NEON14,realknnNEON14)
 knnNEON14 <- knnNEON14 %>% mutate(NEONknndiff = ((preds.knn.tr.NEON14 - realknnNEON14)/realknnNEON14))
 mortrate <- NEON14$NEONtreediff
