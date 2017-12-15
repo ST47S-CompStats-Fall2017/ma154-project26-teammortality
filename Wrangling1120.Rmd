@@ -1461,6 +1461,7 @@ knnWAR14.mse
 
 **Shiny Visualization**
 
+The first important step to building our shiny application was to clean the data in a way that would be "function friendly." While researching Shiny and finding ways to build interactive maps of US county data, we discovered a package called choroplethr. From this package we utilize a function called county_choropleth() which builds a choropleth map of the counties in the United States. However, count-choropleth() takes a datafram with specific column names: region and value. Region must be assigned to the standard fips codes for the United States counties without any leading zeros. Value is then the information that will be projected onto the map. By setting number of colors to 1 in this instance we are able to create a continuous scale for our variable of interest - mortality rates. However, this particular function that county-choropleth() takes means that we need to manipulate our data set in several ways. This required us to rename our fips column to region and our mortality colu...
 
 ```{r echo =FALSE}
 fips <- countyratesfullcases$fips
