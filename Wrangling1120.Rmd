@@ -1488,6 +1488,7 @@ results  <- rbind.data.frame(
       WARreal,WARtree,WARknn)
 View(results)
 
+write.csv(results,"results.csv")
 ```
 
 **Limitations**
