@@ -10,12 +10,12 @@
 library(shiny)
 library(maps)
 library(ggplot2)
-library(fiftystater)
-library(leaflet)
 library(dplyr)
 library(choroplethr)
 
+
 county <- map_data("county")
+
 
 
 shinyServer(function(input, output) {
@@ -49,13 +49,10 @@ shinyServer(function(input, output) {
                    "Regression Tree Estimates" = "tree", 
                    "kNN Estimates" = "knn")
     
-   # name.append <- switch(input$var2,
-    #                "Actual Mortality Rates" = "Deaths per 10,000",
-     #               "Regression Tree Estimates" =  "Regression Tree Model: prediction errors",
-      #              "kNN Estimates" = "kNN Model: prediction errors") 
     
     results.to.use <- results %>% filter(model == model.choice) %>% filter(cause == cause.of.death) %>% 
                               mutate(region = fips) %>% mutate(value = mortrate)
+    
     
     county_choropleth(results.to.use, num_colors = 1)
     
