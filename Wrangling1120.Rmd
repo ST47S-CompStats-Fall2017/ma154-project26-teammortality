@@ -1,5 +1,5 @@
 ---
-title: "Death by Chocolate? No, Death by County. Modelling County-Level Mortality Rates"
+title: "Modeling County-Level Mortality Rates"
 output: pdf_document
 ---
 
@@ -18,6 +18,7 @@ We know that mortality rates from different causes of death vary significantly a
 
 
 It is understood that mortality rates from different causes vary between regions of the United States and even between counties in the same state, but those differences and potential reasons for them have not been systematically explored. Our hope in conducting this project is to better understand some of those differences and to be able to visually present them, as well as the results of some statistical models we made to predict them.
+
 There are several audiences this project could serve different purposes for. One is public health officials - it could be very helpful for them to have a better grasp on actual mortality rates in the areas they operate in, and what factors have been found to be determinants of those mortality rates. A second potential purpose is informing policymakers and government officials of some of the health impacts of decisions they make. While not every variable we consider is completely or, in some cases, even remotely controlled by government action, it could be helpful to understand the impact on mortality rates of, say, the percentage of people who are uninsured or the child poverty rate. Finally, this project will hopefully be part of a conversation with other researchers in the literature on causes of death and their determinants.
 
 
@@ -174,6 +175,7 @@ countyratesfullcases <- countyratesnogaps[complete.cases(countyratesnogaps),]
 **Model Creation/Statistical Computation**
 
 We created two models for each of the twenty causes of death - a regression tree and a k nearest neighbors model.
+
 Regression trees classify counties into regions based on their values of the explanatory variables, then assigns every county in a given region the average of the counties in that region.
 
 k-nearest neighbors look at the k counties, in this case 5 counties, closest to the county of interest in terms of their values of the explanatory variables, and predicts the mortality rate for that county as the average of the mortality rates of those 5 counties for that cause of death.
@@ -354,6 +356,7 @@ set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.TROP14 <- train(TROP.TROP14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+rpart.plot(tr.TROP14$finalModel)
 mortrate <- countyratesfullcases$TROP.TROP14
 cause <- rep("TROP", 3110)
 cause <- as.data.frame(cause)
@@ -1479,8 +1482,11 @@ knnWAR14.mse
 
 **Shiny Visualization**
 
+Our Shiny application can be found at https://teammortality.shinyapps.io/CountyMortality/. This portion is what we learned beyond what we covered in class.
+
 The first important step to building our shiny application was to clean the data in a way that would be "function friendly." While researching Shiny and finding ways to build interactive maps of US county data, we discovered a package called choroplethr. From this package we utilize a function called county_choropleth() which builds a choropleth map of the counties in the United States. However, count-choropleth() takes a datafram with specific column names: region and value. Region must be assigned to the standard fips codes for the United States counties without any leading zeros. Value is then the information that will be projected onto the map. By setting number of colors to 1 in this instance we are able to create a continuous scale for our variable of interest - mortality rates. However, this particular function that county-choropleth() takes means that we need to manipulate our data set in several ways. This required us to rename our fips column to region and our mortality column to value. 
-Most importantly we needed to filter the data so that the values used when rendering a specific instance of our map could be selected by the user. To do this we created two drop down menus in the applet that would prompt filtering our master data set. Finally, we renamed the columns in our filtered data set to have a "region" and "value" column before using this new data set to build our map.  
+
+Most importantly we needed to filter the data so that the values used when rendering a specific instance of our map could be selected by the user. To do this we created two drop down menus in the applet that would prompt filtering our master data set. Finally, we renamed the columns in our filtered data set to have a "region" and "value" column before using this new data set to build our map.
 
 The master data set was bound using the following code:
 ```{r echo =FALSE}
@@ -1646,6 +1652,9 @@ Finally, our model offers limited policy implications. Many of the factors that 
 **Future Extensions**
 
 There are a few directions in which we would extend or work given more data and time.
+
 The first is the inclusion of data for more factors about the counties. In particular, we think it would be really interesting to look at the impact on mortality rates of the medical system in a given county - basic factors such as the number of doctors and hospital beds per capita, but also the quality of the care provided.
+
 Next, we would include more types of statistical models if possible. For instance, we might build random forests or bagged trees instead of only k-nearest neighbors and regression tree models.
+
 Finally, with more time we would use the dataset we already have to model and visualize trends in mortality rates over time. The mortality rates dataset we have has rates for each cause for each county every 5 years between 1980 and 2014. We did not have time to build models and visualizations for all of those years, focusing only on 2014 instead, but that would likely be a very interesting and insightful extension.
