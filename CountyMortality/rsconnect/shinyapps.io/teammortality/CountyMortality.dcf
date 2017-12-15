@@ -1,0 +1,12 @@
+name: CountyMortality
+title:
+username:
+account: teammortality
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 249206
+bundleId: 1137155
+url: https://teammortality.shinyapps.io/CountyMortality/
+when: 1513357870.14222
+asMultiple: FALSE
+asStatic: FALSE
