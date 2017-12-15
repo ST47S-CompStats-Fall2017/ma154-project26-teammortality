@@ -13,10 +13,11 @@ library(ggplot2)
 library(dplyr)
 library(choroplethr)
 library(googlesheets)
+library(choroplethrMaps)
 
-county <- map_data("county")
+#county <- map_data("county")
 
-#results <- read.csv("results.csv")
+results <- read.csv("results.csv")
                 
 shinyServer(function(input, output) {
    
@@ -28,8 +29,8 @@ shinyServer(function(input, output) {
                    "Common Infectious Diseases" = "INF",
                    "Neglected Tropical Diseases" = "TROP",  
                    "Neonatal Disorders" = "NEON", 
-                   "Nutrional Deficiencies" = "NUT",
-                   "Other Communicable, Maternal, Neonatal and Nutritional Diseases" == "OTHC",
+                   "Nutritional Deficiencies" = "NUT",
+                   "Other Communicable, Maternal, Neonatal and Nutritional Diseases" = "OTHC",
                    "Neoplasms" = "NEOP",
                    "Chronic Respiratory Diseases" = "CHRON", 
                    "Cirrhosis and Chronic Liver Diseases" = "CIRR",
@@ -38,16 +39,16 @@ shinyServer(function(input, output) {
                    "Mental and Substance Use Disorders" = "MENSUB", 
                    "Diabetes, Urogenital, Blood and Endocrine Diseases" = "DIAB", 
                    "Musculoskeletal  Disorders" = "MUSC", 
-                   "Other Non-cummunicable Diseases" = "OTHN",
+                   "Other Non-communicable Diseases" = "OTHN",
                    "Transport Injuries" = "TRAN",
                    "Unintentional Injuries" = "UNIN", 
                    "Self-harm and Interpersonal Violence" = "SELF",
                    "Forces of Nature, War, and Legal Intervention" = "WAR")
     
    model.choice <- switch(input$model,
-                   "Actual Mortality Rates" = "real", 
-                   "Regression Tree Estimates" = "tree", 
-                   "kNN Estimates" = "knn")
+                   "Actual Mortality Rates per 10,000" = "real", 
+                   "Regression Tree Estimate Error" = "tree", 
+                   "kNN Estimate Error" = "knn")
     
     
     results.to.use <- results %>% filter(model == model.choice) %>% filter(cause == cause.of.death) %>% 
