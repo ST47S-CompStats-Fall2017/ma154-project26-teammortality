@@ -5,8 +5,8 @@ account: teammortality
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 249206
-bundleId: 1137155
+bundleId: 1137443
 url: https://teammortality.shinyapps.io/CountyMortality/
-when: 1513357870.14222
+when: 1513368337.75337
 asMultiple: FALSE
 asStatic: FALSE

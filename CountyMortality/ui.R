@@ -13,9 +13,10 @@ library(ggplot2)
 library(dplyr)
 library(choroplethr)
 library(googlesheets)
+library(choroplethrMaps)
 
 
-#results <- read.csv("results.csv")
+results <- read.csv("results.csv")
 
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
@@ -33,12 +34,12 @@ shinyUI(fluidPage(
                 label = "Choose Cause of Death",
                 
                 choices = list("HIV", "Maternal Disorders", "Common Infectious Diseases",
-                               "Neglected Tropical Diseases", "Neonatal Disorders", "Nutritutional Deficiencies",
+                               "Neglected Tropical Diseases", "Neonatal Disorders", "Nutritional Deficiencies",
                                "Other Communicable, Maternal, Neonatal and Nutritional Diseases", 
                                "Neoplasms", "Chronic Respiratory Diseases", "Cirrhosis and Chronic Liver Diseases",
                                "Digestive Diseases", "Neurological Disorders", "Mental and Substance Use Disorders",
                                "Diabetes, Urogenital, Blood and Endocrine Diseases", "Musculoskeletal  Disorders",
-                               "Other Non-cummunicable Diseases", "Transport Injuries", "Unintentional Injuries",
+                               "Other Non-communicable Diseases", "Transport Injuries", "Unintentional Injuries",
                                "Self-harm and Interpersonal Violence", "Forces of Nature, War, and Legal Intervention"),
                 
                 selected = "HIV"),
@@ -48,14 +49,15 @@ shinyUI(fluidPage(
                 
                label = "Choose Model", 
                 
-               choices = list("Actual Mortality Rates", "Regression Tree Estimates", "kNN Estimates"), 
+               choices = list("Actual Mortality Rates per 10,000", "Regression Tree Estimate Error", "kNN Estimate Error"), 
                 
                selected = "Actual Mortality Rates")
     ),
     
 
   
-  mainPanel(plotOutput("map"), width = 12))
-  
+  mainPanel(plotOutput("map"), width = 12,
+            h6("*For model estimates, our legend refers to error rates. i.e. a '1.5' means our model overestimates the deaths per 10,000 by 150%" ))
+    )
   )
 )
