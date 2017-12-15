@@ -1619,5 +1619,9 @@ shinyServer(function(input, output) {
 
 **Limitations**
 
-Alaska and Oglala Lakota
+The limitations of our project are five fold. First the data sets we used contain several holes. For example, every county in Alaska as well as Oglala Lakota in South Dakota were missing mortality data. For this reason they show up as black spaces in our map.
+Our second problem is inherent in mortality measures. Because mortality is measured on a scale of deaths per 10,000 people, our data easily drastically overestimates the mortality of counties with originally very small mortality rates. For example, if a county has close to 0 or 1 death per 10,000 and our estimate for that county is 3 deaths, that means our estimate is 300% off, despite the difference only being a person in 5,000. 
+Next, none of our findings are causal. We show correlations and connections between similar counties and are able to highlight counties that differ vastly from the other counties most similar to them but we don't offer any information about why these counties are so different from their neighbors. 
+Penultimately, the R squared for our models are highly inconsistent meaning the reliability of our estimates and the information gained from them is variable. Our R squared ranges from as low as .08 to .67. 
+Finally, our model offers limited policy implications. 
 
