@@ -1462,8 +1462,9 @@ knnWAR14.mse
 **Shiny Visualization**
 
 The first important step to building our shiny application was to clean the data in a way that would be "function friendly." While researching Shiny and finding ways to build interactive maps of US county data, we discovered a package called choroplethr. From this package we utilize a function called county_choropleth() which builds a choropleth map of the counties in the United States. However, count-choropleth() takes a datafram with specific column names: region and value. Region must be assigned to the standard fips codes for the United States counties without any leading zeros. Value is then the information that will be projected onto the map. By setting number of colors to 1 in this instance we are able to create a continuous scale for our variable of interest - mortality rates. However, this particular function that county-choropleth() takes means that we need to manipulate our data set in several ways. This required us to rename our fips column to region and our mortality column to value. 
-Most importantly we needed to filter the data so that the values used when rendering our model / this specific instance of our map could be selected by the user. To do this we created two drop down menus in.....
+Most importantly we needed to filter the data so that the values used when rendering a specific instance of our map could be selected by the user. To do this we created two drop down menus in the applet that would prompt filtering our master data set. Finally, we renamed the columns in our filtered data set to have a "region" and "value" column before using this new data set to build our map.  
 
+The master data set was bound using the following code:
 ```{r echo =FALSE}
 fips <- countyratesfullcases$fips
 results  <- rbind.data.frame(
@@ -1491,6 +1492,120 @@ View(results)
 
 write.csv(results,"results.csv")
 ```
+
+Our ui.R page: 
+```{ui.R}
+library(shiny)
+library(maps)
+library(ggplot2)
+library(dplyr)
+library(choroplethr)
+library(googlesheets)
+library(choroplethrMaps)
+
+
+results <- read.csv("results.csv")
+
+# Define UI for application that draws a histogram
+shinyUI(fluidPage(
+  
+  titlePanel("County Level Mortality"),
+  
+  sidebarLayout(
+    sidebarPanel (
+      
+    helpText("See how accurately our predictive models are able to predict 
+             the mortality rate for a given cause of death."),
+    
+    selectInput("var",
+                
+                label = "Choose Cause of Death",
+                
+                choices = list("HIV", "Maternal Disorders", "Common Infectious Diseases",
+                               "Neglected Tropical Diseases", "Neonatal Disorders", "Nutritional Deficiencies",
+                               "Other Communicable, Maternal, Neonatal and Nutritional Diseases", 
+                               "Neoplasms", "Chronic Respiratory Diseases", "Cirrhosis and Chronic Liver Diseases",
+                               "Digestive Diseases", "Neurological Disorders", "Mental and Substance Use Disorders",
+                               "Diabetes, Urogenital, Blood and Endocrine Diseases", "Musculoskeletal  Disorders",
+                               "Other Non-communicable Diseases", "Transport Injuries", "Unintentional Injuries",
+                               "Self-harm and Interpersonal Violence", "Forces of Nature, War, and Legal Intervention"),
+                
+                selected = "HIV"),
+   
+      
+    selectInput("model", 
+                
+               label = "Choose Model", 
+                
+               choices = list("Actual Mortality Rates per 10,000", "Regression Tree Estimate Error", "kNN Estimate Error"), 
+                
+               selected = "Actual Mortality Rates")
+    ),
+    
+  
+  mainPanel(plotOutput("map"), width = 12,
+            h6("*For model estimates, our legend refers to error rates. i.e. a '1.5' means our model overestimates the deaths per 10,000 by 150%" ))
+    )
+  )
+)
+```
+
+And our server.R page:
+```{server.R}
+library(shiny)
+library(maps)
+library(ggplot2)
+library(dplyr)
+library(choroplethr)
+library(googlesheets)
+library(choroplethrMaps)
+
+#county <- map_data("county")
+
+results <- read.csv("results.csv")
+                
+shinyServer(function(input, output) {
+   
+  output$map <- renderPlot({
+    
+    cause.of.death <- switch(input$var, 
+                   "HIV" = "HIV",
+                   "Maternal Disorders" = "MAT",
+                   "Common Infectious Diseases" = "INF",
+                   "Neglected Tropical Diseases" = "TROP",  
+                   "Neonatal Disorders" = "NEON", 
+                   "Nutritional Deficiencies" = "NUT",
+                   "Other Communicable, Maternal, Neonatal and Nutritional Diseases" = "OTHC",
+                   "Neoplasms" = "NEOP",
+                   "Chronic Respiratory Diseases" = "CHRON", 
+                   "Cirrhosis and Chronic Liver Diseases" = "CIRR",
+                   "Digestive Diseases" = "DIG", 
+                   "Neurological Disorders" = "NEUR",
+                   "Mental and Substance Use Disorders" = "MENSUB", 
+                   "Diabetes, Urogenital, Blood and Endocrine Diseases" = "DIAB", 
+                   "Musculoskeletal  Disorders" = "MUSC", 
+                   "Other Non-communicable Diseases" = "OTHN",
+                   "Transport Injuries" = "TRAN",
+                   "Unintentional Injuries" = "UNIN", 
+                   "Self-harm and Interpersonal Violence" = "SELF",
+                   "Forces of Nature, War, and Legal Intervention" = "WAR")
+    
+   model.choice <- switch(input$model,
+                   "Actual Mortality Rates per 10,000" = "real", 
+                   "Regression Tree Estimate Error" = "tree", 
+                   "kNN Estimate Error" = "knn")
+    
+    
+    results.to.use <- results %>% filter(model == model.choice) %>% filter(cause == cause.of.death) %>% 
+                              mutate(region = fips) %>% mutate(value = mortrate)
+    
+    county_choropleth(results.to.use, num_colors = 1)
+    
+  })
+  
+})
+```
+
 
 **Limitations**
 
