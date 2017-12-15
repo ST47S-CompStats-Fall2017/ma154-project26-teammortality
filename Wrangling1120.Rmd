@@ -125,6 +125,7 @@ require(dplyr)
 countyrates <- inner_join(countydata,mortalityrates,by=c("fips"))
 ```
 
+When we thought we needed the latitude and longitude of each county, we downloaded a file that contained that information and renamed and selected the variables for them.
 
 ```{r}
 require(dplyr)
@@ -134,6 +135,8 @@ require(dplyr)
 `2015_Gaz_counties_national` <- rename(`2015_Gaz_counties_national`, longitude = INTPTLONG)
 `2015_Gaz_counties_national` <- `2015_Gaz_counties_national` %>% select(fips,latitude,longitude)
 ```
+
+We then merged that dataset into our main dataframe, countyrates.
 
 ```{r}
 countyrates <- left_join(countyrates,`2015_Gaz_counties_national`,by=c("fips"))
