@@ -166,6 +166,9 @@ countyratesfullcases <- countyratesnogaps[complete.cases(countyratesnogaps),]
 **Model Creation/Statistical Computation**
 
 We created two models for each of the twenty causes of death - a regression tree and a k nearest neighbors model.
+Regression trees classify counties into regions based on their values of the explanatory variables, then assigns every county in a given region the average of the counties in that region.
+
+k-nearest neighbors look at the k counties, in this case 5 counties, closest to the county of interest in terms of their values of the explanatory variables, and predicts the mortality rate for that county as the average of the mortality rates of those 5 counties for that cause of death.
 
 
 ```{r}
@@ -180,12 +183,10 @@ To give a sense for our model-building process, we have included the R code for 
 
 *HIV: HIV-AIDS and Tuberculosis*
 
-Regression tree and mean square error
+Regression tree
 
 ```{r}
 fips <- countyratesfullcases$fips
-latitude <- countyratesfullcases$latitude
-longitude <- countyratesfullcases$longitude
 ```
 
 ```{r}
@@ -224,7 +225,13 @@ cause <- as.data.frame(cause)
 model <- rep("tree", 3110)
 model <- as.data.frame(model)
 HIVtree <- cbind(fips,cause,model,mortrate) 
+```
 
+
+Regression tree mean square error
+
+
+```{r}
 treeHIV14.mse <- mean((preds.tr.HIV14 - realHIV14)^2)
 treeHIV14.mse
 ```
@@ -285,7 +292,7 @@ model <- as.data.frame(model)
 INFreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realINF14 <- countyratesfullcases$INF.INF14
 preds.tr.INF14 <- predict(tr.INF14$finalModel, newdata = countyratesfullcases)
 INF14 <- cbind.data.frame(preds.tr.INF14,realINF14)
@@ -347,7 +354,7 @@ model <- as.data.frame(model)
 TROPreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realTROP14 <- countyratesfullcases$TROP.TROP14
 preds.tr.TROP14 <- predict(tr.TROP14$finalModel, newdata = countyratesfullcases)
 TROP14 <- cbind.data.frame(preds.tr.TROP14,realTROP14)
@@ -410,7 +417,7 @@ model <- as.data.frame(model)
 MATreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realMAT14 <- countyratesfullcases$MAT.MAT14
 preds.tr.MAT14 <- predict(tr.MAT14$finalModel, newdata = countyratesfullcases)
 MAT14 <- cbind.data.frame(preds.tr.MAT14,realMAT14)
@@ -473,7 +480,7 @@ model <- as.data.frame(model)
 NEONreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realNEON14 <- countyratesfullcases$NEON.NEON14
 preds.tr.NEON14 <- predict(tr.NEON14$finalModel, newdata = countyratesfullcases)
 NEON14 <- cbind.data.frame(preds.tr.NEON14,realNEON14)
@@ -536,7 +543,7 @@ model <- as.data.frame(model)
 NUTreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realNUT14 <- countyratesfullcases$NUT.NUT14
 preds.tr.NUT14 <- predict(tr.NUT14$finalModel, newdata = countyratesfullcases)
 NUT14 <- cbind.data.frame(preds.tr.NUT14,realNUT14)
@@ -590,6 +597,7 @@ set.seed(1)
 fitControl <- trainControl(method="cv")
 tr.OTHC14 <- train(OTHC.OTHC14 ~ rep16_frac + dem16_frac + Less.Than.High.School + At.Least.High.School.Diploma + At.Least.Bachelor.s.Degree + Graduate.Degree + School.Enrollment + Median.Earnings.2010.dollars + White.not.Latino.Population + African.American.Population + Native.American.Population + Asian.American.Population + Latino.Population + Adults.65.and.Older.Living.in.Poverty + Total.Population + Poverty.Rate.below.federal.poverty.threshold + Child.Poverty.living.in.families.below.the.poverty.line + Management.professional.and.related.occupations +      Service.occupations + Sales.and.office.occupations + Farming.fishing.and.forestry.occupations + Construction.extraction.maintenance.and.repair.occupations + Production.transportation.and.material.moving.occupations + median_age + Children.in.single.parent.households + Adult.obesity + Diabetes + Uninsured + Unemployment, data=countyratesfullcases, method="rpart2", 
                   trControl = fitControl, tuneGrid=data.frame(maxdepth=1:20))
+rpart.plot(tr.OTHC14$finalModel)
 mortrate <- countyratesfullcases$OTHC.OTHC14
 cause <- rep("OTHC", 3110)
 cause <- as.data.frame(cause)
@@ -598,7 +606,7 @@ model <- as.data.frame(model)
 OTHCreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realOTHC14 <- countyratesfullcases$OTHC.OTHC14
 preds.tr.OTHC14 <- predict(tr.OTHC14$finalModel, newdata = countyratesfullcases)
 OTHC14 <- cbind.data.frame(preds.tr.OTHC14,realOTHC14)
@@ -661,7 +669,7 @@ model <- as.data.frame(model)
 NEOPreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realNEOP14 <- countyratesfullcases$NEOP.NEOP14
 preds.tr.NEOP14 <- predict(tr.NEOP14$finalModel, newdata = countyratesfullcases)
 NEOP14 <- cbind.data.frame(preds.tr.NEOP14,realNEOP14)
@@ -724,7 +732,7 @@ model <- as.data.frame(model)
 CHRONreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realCHRON14 <- countyratesfullcases$CHRON.CHRON14
 preds.tr.CHRON14 <- predict(tr.CHRON14$finalModel, newdata = countyratesfullcases)
 CHRON14 <- cbind.data.frame(preds.tr.CHRON14,realCHRON14)
@@ -787,7 +795,7 @@ model <- as.data.frame(model)
 CIRRreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realCIRR14 <- countyratesfullcases$CIRR.CIRR14
 preds.tr.CIRR14 <- predict(tr.CIRR14$finalModel, newdata = countyratesfullcases)
 CIRR14 <- cbind.data.frame(preds.tr.CIRR14,realCIRR14)
@@ -850,7 +858,7 @@ model <- as.data.frame(model)
 DIGreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realDIG14 <- countyratesfullcases$DIG.DIG14
 preds.tr.DIG14 <- predict(tr.DIG14$finalModel, newdata = countyratesfullcases)
 DIG14 <- cbind.data.frame(preds.tr.DIG14,realDIG14)
@@ -913,7 +921,7 @@ model <- as.data.frame(model)
 NEURreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realNEUR14 <- countyratesfullcases$NEUR.NEUR14
 preds.tr.NEUR14 <- predict(tr.NEUR14$finalModel, newdata = countyratesfullcases)
 NEUR14 <- cbind.data.frame(preds.tr.NEUR14,realNEUR14)
@@ -976,7 +984,7 @@ model <- as.data.frame(model)
 MENSUBreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realMENSUB14 <- countyratesfullcases$MENSUB.MENSUB14
 preds.tr.MENSUB14 <- predict(tr.MENSUB14$finalModel, newdata = countyratesfullcases)
 MENSUB14 <- cbind.data.frame(preds.tr.MENSUB14,realMENSUB14)
@@ -1039,7 +1047,7 @@ model <- as.data.frame(model)
 DIABreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realDIAB14 <- countyratesfullcases$DIAB.DIAB14
 preds.tr.DIAB14 <- predict(tr.DIAB14$finalModel, newdata = countyratesfullcases)
 DIAB14 <- cbind.data.frame(preds.tr.DIAB14,realDIAB14)
@@ -1102,7 +1110,7 @@ model <- as.data.frame(model)
 MUSCreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realMUSC14 <- countyratesfullcases$MUSC.MUSC14
 preds.tr.MUSC14 <- predict(tr.MUSC14$finalModel, newdata = countyratesfullcases)
 MUSC14 <- cbind.data.frame(preds.tr.MUSC14,realMUSC14)
@@ -1165,7 +1173,7 @@ model <- as.data.frame(model)
 OTHNreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realOTHN14 <- countyratesfullcases$OTHN.OTHN14
 preds.tr.OTHN14 <- predict(tr.OTHN14$finalModel, newdata = countyratesfullcases)
 OTHN14 <- cbind.data.frame(preds.tr.OTHN14,realOTHN14)
@@ -1228,7 +1236,7 @@ model <- as.data.frame(model)
 TRANreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realTRAN14 <- countyratesfullcases$TRAN.TRAN14
 preds.tr.TRAN14 <- predict(tr.TRAN14$finalModel, newdata = countyratesfullcases)
 TRAN14 <- cbind.data.frame(preds.tr.TRAN14,realTRAN14)
@@ -1291,7 +1299,7 @@ model <- as.data.frame(model)
 UNINreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realUNIN14 <- countyratesfullcases$UNIN.UNIN14
 preds.tr.UNIN14 <- predict(tr.UNIN14$finalModel, newdata = countyratesfullcases)
 UNIN14 <- cbind.data.frame(preds.tr.UNIN14,realUNIN14)
@@ -1354,7 +1362,7 @@ model <- as.data.frame(model)
 SELFreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realSELF14 <- countyratesfullcases$SELF.SELF14
 preds.tr.SELF14 <- predict(tr.SELF14$finalModel, newdata = countyratesfullcases)
 SELF14 <- cbind.data.frame(preds.tr.SELF14,realSELF14)
@@ -1417,7 +1425,7 @@ model <- as.data.frame(model)
 WARreal <- cbind(fips,cause,model,mortrate)
 ```
 
-```{r}
+```{r echo=FALSE}
 realWAR14 <- countyratesfullcases$WAR.WAR14
 preds.tr.WAR14 <- predict(tr.WAR14$finalModel, newdata = countyratesfullcases)
 WAR14 <- cbind.data.frame(preds.tr.WAR14,realWAR14)
@@ -1459,6 +1467,8 @@ knnWAR14.mse
 ```
 
 
+\newpage
+
 **Shiny Visualization**
 
 The first important step to building our shiny application was to clean the data in a way that would be "function friendly." While researching Shiny and finding ways to build interactive maps of US county data, we discovered a package called choroplethr. From this package we utilize a function called county_choropleth() which builds a choropleth map of the counties in the United States. However, count-choropleth() takes a datafram with specific column names: region and value. Region must be assigned to the standard fips codes for the United States counties without any leading zeros. Value is then the information that will be projected onto the map. By setting number of colors to 1 in this instance we are able to create a continuous scale for our variable of interest - mortality rates. However, this particular function that county-choropleth() takes means that we need to manipulate our data set in several ways. This required us to rename our fips column to region and our mortality column to value. 
@@ -1494,7 +1504,7 @@ write.csv(results,"results.csv")
 ```
 
 Our ui.R page: 
-```{ui.R}
+```{ui}
 library(shiny)
 library(maps)
 library(ggplot2)
@@ -1551,7 +1561,7 @@ shinyUI(fluidPage(
 ```
 
 And our server.R page:
-```{server.R}
+```{server}
 library(shiny)
 library(maps)
 library(ggplot2)
