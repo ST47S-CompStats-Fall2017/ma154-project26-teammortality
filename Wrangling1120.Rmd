@@ -10,15 +10,23 @@ knitr::opts_chunk$set(echo = TRUE,tidy.opts=list(width.cutoff=60),tidy=TRUE)
 
 **Introduction**
 
-Mortality rates from many causes of death are known to vary across counties. We wanted to explore what other factors about counties are correlated to county-level mortality rates from various causes to better understand what some causes of the relative geographic prevalence of different causes of death may be. Our analysis and visualizations display actual variation in causes of death between counties, and show both the power and the shortcomings of using statistical modelling techniques to estimate causes of death based on other factors about counties.
 
+We know that mortality rates from different causes of death vary significantly across regions of the United States and even between counties in the same state, but we don’t know a ton about why they vary the way they do. In this project, we wanted to explore what other factors about counties are related to county-level mortality rates from various causes to better understand what some causes of that variation in different causes of death may be. Our analysis and visualizations display actual variation in causes of death in 2014 between counties and how well our multiple models of mortality rates do in predicting the actual mortality rates, showing  both the power and the shortcomings of using statistical modeling techniques to estimate causes of death based on other factors about counties.
 
 
 **Motivation/Purpose**
 
-It is understood that mortality rates from different causes vary between regions of the United States and even between counties in the same state, but those differences and potential reasons for them have not been systematically explored.
+
+It is understood that mortality rates from different causes vary between regions of the United States and even between counties in the same state, but those differences and potential reasons for them have not been systematically explored. Our hope in conducting this project is to better understand some of those differences and to be able to visually present them, as well as the results of some statistical models we made to predict them.
+There are several audiences this project could serve different purposes for. One is public health officials - it could be very helpful for them to have a better grasp on actual mortality rates in the areas they operate in, and what factors have been found to be determinants of those mortality rates. A second potential purpose is informing policymakers and government officials of some of the health impacts of decisions they make. While not every variable we consider is completely or, in some cases, even remotely controlled by government action, it could be helpful to understand the impact on mortality rates of, say, the percentage of people who are uninsured or the child poverty rate. Finally, this project will hopefully be part of a conversation with other researchers in the literature on causes of death and their determinants.
+
 
 **Background**
+
+
+In general, little background information is required to understand our project except the knowledge that medical professionals usually record a broad category of cause of death when someone dies. Those records, and the estimates created from them by previous researchers, form the basis of our project.
+To understand our data wrangling, it is necessary to know that FIPS, or Federal Information Processing Standard, codes uniquely identify US counties. Besides that, the other variables we use are either defined as they are entered or are common terms explained in the variable names.
+
 
 \newpage
 
@@ -1617,11 +1625,27 @@ shinyServer(function(input, output) {
 ```
 
 
+\newpage
+
 **Limitations**
 
-The limitations of our project are five fold. First the data sets we used contain several holes. For example, every county in Alaska as well as Oglala Lakota in South Dakota were missing mortality data. For this reason they show up as black spaces in our map.
+The limitations of our project are five fold. 
+
+First the data sets we used contain several holes. For example, every county in Alaska as well as Oglala Lakota in South Dakota were missing mortality data. For this reason they show up as black spaces in our map.
+
 Our second problem is inherent in mortality measures. Because mortality is measured on a scale of deaths per 10,000 people, our data easily drastically overestimates the mortality of counties with originally very small mortality rates. For example, if a county has close to 0 or 1 death per 10,000 and our estimate for that county is 3 deaths, that means our estimate is 300% off, despite the difference only being a person in 5,000. 
 Next, none of our findings are causal. We show correlations and connections between similar counties and are able to highlight counties that differ vastly from the other counties most similar to them but we don't offer any information about why these counties are so different from their neighbors. 
-Penultimately, the R squared for our models are highly inconsistent meaning the reliability of our estimates and the information gained from them is variable. Our R squared ranges from as low as .08 to .67. 
-Finally, our model offers limited policy implications. 
 
+Penultimately, the R squared for our models are highly inconsistent meaning the reliability of our estimates and the information gained from them is variable. Our R squared ranges from as low as .08 to .67. 
+
+Finally, our model offers limited policy implications. Many of the factors that are correlated with mortality rates, such as racial composition and electoral results, cannot be affected by government action, while others, such as the sector composition of employment and educational attainment, can only be affected indirectly and a small amount. This limits the potential actual usefulness of this study to policymakers.
+
+
+\newpage
+
+**Future Extensions**
+
+There are a few directions in which we would extend or work given more data and time.
+The first is the inclusion of data for more factors about the counties. In particular, we think it would be really interesting to look at the impact on mortality rates of the medical system in a given county - basic factors such as the number of doctors and hospital beds per capita, but also the quality of the care provided.
+Next, we would include more types of statistical models if possible. For instance, we might build random forests or bagged trees instead of only k-nearest neighbors and regression tree models.
+Finally, with more time we would use the dataset we already have to model and visualize trends in mortality rates over time. The mortality rates dataset we have has rates for each cause for each county every 5 years between 1980 and 2014. We did not have time to build models and visualizations for all of those years, focusing only on 2014 instead, but that would likely be a very interesting and insightful extension.
